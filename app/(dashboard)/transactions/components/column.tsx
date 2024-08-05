@@ -9,7 +9,7 @@ import { client } from "@/lib/hono";
 import Actions from "./actions";
 import { format } from "date-fns";
 import { cn, formatCurrency } from "@/lib/utils";
-import BranchColumn from "./account-column";
+import BranchColumn from "./branch-column";
 
 export type ResponseType = InferResponseType<
   (typeof client.api)[":email"]["transactions"]["$get"],

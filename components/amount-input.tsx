@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/tooltip";
 import { Info, MinusCircle, PlusCircle } from "lucide-react";
 import React from "react";
-import { float } from "drizzle-orm/mysql-core";
 
 interface AmountInputProps {
   value: string;
