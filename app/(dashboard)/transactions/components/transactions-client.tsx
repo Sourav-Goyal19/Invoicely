@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { Loader2, Plus } from "lucide-react";
 import { columns, ResponseType } from "./column";
 
@@ -38,18 +37,16 @@ const CsvFormFields = insertTransactionsSchema.omit({
 
 type CsvFormValues = z.input<typeof CsvFormFields>;
 
-const TransactionsPageClient = () => {
-  const { data: authdata } = useSession();
-
+const TransactionsPageClient = ({ email }: { email: string }) => {
   const [variant, setVariant] = useState<VARIANT>("LIST");
   const [importResults, setImportResults] = useState(INITIAL_IMPORT_RESULTS);
   const { onOpen } = useNewTransaction();
 
-  const TransactionQuery = useGetTransactions(authdata?.user?.email!);
-  const deletetransactions = useBulkDeleteTransactions(authdata?.user?.email!);
-  const bulkCreateMutation = useBulkCreateTransactions(authdata?.user?.email!);
+  const TransactionQuery = useGetTransactions(email!);
+  const deletetransactions = useBulkDeleteTransactions(email!);
+  const bulkCreateMutation = useBulkCreateTransactions(email!);
 
-  const [BranchDialog, confirm] = useSelectBranch();
+  const [BranchDialog, confirm] = useSelectBranch({ email });
 
   const isDisabled = TransactionQuery.isLoading || deletetransactions.isPending;
 

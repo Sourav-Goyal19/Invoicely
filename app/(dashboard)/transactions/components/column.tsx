@@ -8,8 +8,8 @@ import { ArrowUpDown } from "lucide-react";
 import { client } from "@/lib/hono";
 import Actions from "./actions";
 import { format } from "date-fns";
-import { cn, formatCurrency } from "@/lib/utils";
 import BranchColumn from "./branch-column";
+import { formatCurrency } from "@/lib/utils";
 
 export type ResponseType = InferResponseType<
   (typeof client.api)[":email"]["transactions"]["$get"],
@@ -72,7 +72,7 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   {
-    accessorKey: "amount",
+    accessorKey: "price",
     header: ({ column }) => {
       return (
         <Button
@@ -84,20 +84,91 @@ export const columns: ColumnDef<ResponseType>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
+  },
+  {
+    accessorKey: "quantity",
+    header: "Quantity",
+  },
+  {
+    accessorKey: "sgstPercent",
+    header: ({ column }) => {
       return (
-        <div
-          className={cn(
-            "text-sm inline-flex items-center justify-center bg-background rounded-full border px-3.5 py-2.5 font-medium transition",
-            amount < 0
-              ? "bg-rose-500/10 border-transparent text-rose-500"
-              : "bg-blue-500/10 border-transparent text-blue-500"
-          )}
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {formatCurrency(amount)}
-        </div>
+          SGST %
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
+    },
+  },
+  {
+    accessorKey: "cgstPercent",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          CGST %
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "sgstAmount",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          SGST
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const sgstAmount = row.getValue("sgstAmount") as number;
+      return <span>{formatCurrency(sgstAmount)}</span>;
+    },
+  },
+  {
+    accessorKey: "cgstAmount",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          CGST
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const cgstAmount = row.getValue("cgstAmount") as number;
+      return <span>{formatCurrency(cgstAmount)}</span>;
+    },
+  },
+  {
+    accessorKey: "total",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Total
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const total = row.getValue("total") as number;
+      return <span>{formatCurrency(total)}</span>;
     },
   },
   {
@@ -108,7 +179,7 @@ export const columns: ColumnDef<ResponseType>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          branch
+          Branch
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );

@@ -4,6 +4,7 @@ import TransactionsPageClient from "./components/transactions-client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 export const metadata: Metadata = {
   title: "Transactions | FinFlow",
@@ -11,10 +12,11 @@ export const metadata: Metadata = {
     "Easily manage your financial transactions with FinFlow. Create, edit, and view transactions with custom branches and categories. Sort, search, and paginate through your financial history effortlessly.",
 };
 
-const TransactionsPage = () => {
+const TransactionsPage = async () => {
+  const user = await getCurrentUser();
   return (
     <Suspense fallback={<TransactionsPageFallback />}>
-      <TransactionsPageClient />
+      <TransactionsPageClient email={user?.email || ""} />
     </Suspense>
   );
 };

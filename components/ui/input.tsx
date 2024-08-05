@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 
 export interface InputProps
@@ -9,6 +8,12 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, NotAllowed, ...props }, ref) => {
+    const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+      if (type === "number") {
+        e.preventDefault();
+      }
+    };
+
     return (
       <input
         type={type}
@@ -18,6 +23,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className
         )}
         ref={ref}
+        onWheel={handleWheel}
         {...props}
       />
     );
