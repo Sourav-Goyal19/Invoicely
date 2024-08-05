@@ -10,21 +10,22 @@ import {
 } from "@/components/ui/dialog";
 import { useCreateBranch } from "@/features/branches/api/use-create-branch";
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
+import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";
 
-export const useSelectBranch = ({
-  email,
-}: {
-  email: string;
-}): [() => JSX.Element, () => Promise<unknown>] => {
+export const useSelectBranch = (): [
+  () => JSX.Element,
+  () => Promise<unknown>
+] => {
   const [promise, setPromise] = useState<{
     resolve: (value: string | undefined) => void;
   } | null>(null);
 
   const selectValue = useRef<string>();
+  const { data } = useSession();
 
-  const branchQuery = useGetBranches(email!);
-  const branchMutation = useCreateBranch(email!);
+  const branchQuery = useGetBranches(data?.user?.email!);
+  const branchMutation = useCreateBranch(data?.user?.email!);
 
   const onCreateBranch = (name: string) => {
     branchMutation.mutate({ name });

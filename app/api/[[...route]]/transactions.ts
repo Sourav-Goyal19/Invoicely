@@ -57,17 +57,11 @@ const app = new Hono()
       const data = await db
         .select({
           id: transactionsTable.id,
-          branchId: transactionsTable.branchId,
-          branch: branchesTable.name,
+          price: transactionsTable.price,
           date: transactionsTable.date,
           product: transactionsTable.product,
-          price: transactionsTable.price,
-          quantity: transactionsTable.quantity,
-          sgstPercent: transactionsTable.sgstPercent,
-          cgstPercent: transactionsTable.cgstPercent,
-          sgstAmount: transactionsTable.sgstAmount,
-          cgstAmount: transactionsTable.cgstAmount,
-          total: transactionsTable.total,
+          branchId: transactionsTable.branchId,
+          branch: branchesTable.name,
         })
         .from(transactionsTable)
         .innerJoin(
@@ -127,17 +121,11 @@ const app = new Hono()
       const [data] = await db
         .select({
           id: transactionsTable.id,
-          branchId: transactionsTable.branchId,
-          branch: branchesTable.name,
+          price: transactionsTable.price,
           date: transactionsTable.date,
           product: transactionsTable.product,
-          price: transactionsTable.price,
-          quantity: transactionsTable.quantity,
-          sgstPercent: transactionsTable.sgstPercent,
-          cgstPercent: transactionsTable.cgstPercent,
-          sgstAmount: transactionsTable.sgstAmount,
-          cgstAmount: transactionsTable.cgstAmount,
-          total: transactionsTable.total,
+          branchId: transactionsTable.branchId,
+          branch: branchesTable.name,
         })
         .from(transactionsTable)
         .innerJoin(

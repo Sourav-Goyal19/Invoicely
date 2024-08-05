@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sheet";
 
 import { z } from "zod";
+import { useSession } from "next-auth/react";
 import { insertTransactionsSchema } from "@/db/schema";
 import { Loader2 } from "lucide-react";
 
@@ -21,11 +22,12 @@ const apiFormFields = insertTransactionsSchema.omit({ id: true, userId: true });
 
 type ApiFormValues = z.input<typeof apiFormFields>;
 
-const NewTransactionSheet = ({ email }: { email: string }) => {
+const NewTransactionSheet = () => {
   const { isOpen, onClose } = useNewTransaction();
+  const { data } = useSession();
 
-  const branchQuery = useGetBranches(email!);
-  const branchMutation = useCreateBranch(email!);
+  const branchQuery = useGetBranches(data?.user?.email!);
+  const branchMutation = useCreateBranch(data?.user?.email!);
   const onCreateBranch = (name: string) =>
     branchMutation.mutate({
       name,
@@ -35,7 +37,7 @@ const NewTransactionSheet = ({ email }: { email: string }) => {
     value: branch.id,
   }));
 
-  const transactionMutation = useCreateTransaction(email!);
+  const transactionMutation = useCreateTransaction(data?.user?.email!);
 
   const isPending = branchMutation.isPending || transactionMutation.isPending;
 

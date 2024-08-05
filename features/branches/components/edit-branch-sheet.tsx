@@ -10,6 +10,7 @@ import { BranchForm } from "./branch-form";
 import { insertBranchSchema } from "@/db/schema";
 import { useOpenBranch } from "../hooks/use-edit-branch";
 import { useGetBranch } from "../api/use-get-branch";
+import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { useEditBranch } from "../api/use-edit-branch";
 import { useDeleteBranch } from "../api/use-delete-branch";
@@ -21,19 +22,20 @@ const formFields = insertBranchSchema.pick({
 
 type FormValues = z.input<typeof formFields>;
 
-const EditBranchSheet = ({ email }: { email: string }) => {
+const EditBranchSheet = () => {
+  const { data } = useSession();
   const { isOpen, onClose, id } = useOpenBranch();
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",
     "You are about to delete this branch"
   );
 
-  const branchQuery = useGetBranch(id!, email!);
+  const branchQuery = useGetBranch(id!, data?.user?.email!);
 
   // console.log(branchQuery.data);
 
-  const mutation = useEditBranch(id!, email!);
-  const deleteMutation = useDeleteBranch(id!, email!);
+  const mutation = useEditBranch(id!, data?.user?.email!);
+  const deleteMutation = useDeleteBranch(id!, data?.user?.email!);
 
   const onSubmit = (data: FormValues) => {
     mutation.mutate(data, {

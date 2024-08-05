@@ -8,12 +8,14 @@ import { Loader2, Plus } from "lucide-react";
 import { columns, ResponseType } from "./column";
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "next-auth/react";
 import { useBulkDeleteBranches } from "@/features/branches/api/use-bulk-delete-branches";
 
-const BranchesPageClient = ({ email }: { email: string }) => {
+const BranchesPageClient = () => {
   const { onOpen } = useNewBranch();
-  const branchQuery = useGetBranches(email!);
-  const deleteBranches = useBulkDeleteBranches(email!);
+  const { data: authdata } = useSession();
+  const branchQuery = useGetBranches(authdata?.user?.email!);
+  const deleteBranches = useBulkDeleteBranches(authdata?.user?.email!);
 
   const isDisabled = branchQuery.isLoading || deleteBranches.isPending;
 

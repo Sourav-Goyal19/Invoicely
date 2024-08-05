@@ -5,6 +5,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { insertTransactionsSchema } from "@/db/schema";
@@ -24,18 +25,19 @@ const apiSchema = insertTransactionsSchema.omit({
 
 type ApiFormValues = z.input<typeof apiSchema>;
 
-const EditTransactionSheet = ({ email }: { email: string }) => {
+const EditTransactionSheet = () => {
+  const { data } = useSession();
   const { isOpen, onClose, id } = useOpenTransaction();
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",
     "You are about to delete this Transaction"
   );
-  const transactionQuery = useGetTransaction(id!, email!);
-  const transactionMutation = useEditTransaction(id!, email!);
-  const deleteMutation = useDeleteTransaction(id!, email!);
+  const transactionQuery = useGetTransaction(id!, data?.user?.email!);
+  const transactionMutation = useEditTransaction(id!, data?.user?.email!);
+  const deleteMutation = useDeleteTransaction(id!, data?.user?.email!);
 
-  const branchQuery = useGetBranches(email!);
-  const branchMutation = useCreateBranch(email!);
+  const branchQuery = useGetBranches(data?.user?.email!);
+  const branchMutation = useCreateBranch(data?.user?.email!);
   const onCreateBranch = (name: string) =>
     branchMutation.mutate({
       name,
@@ -77,28 +79,17 @@ const EditTransactionSheet = ({ email }: { email: string }) => {
     ? {
         branchId: transactionQuery.data.branchId,
         product: transactionQuery.data.product,
-        price: transactionQuery.data.price,
-        quantity: transactionQuery.data.quantity,
-        total: Number(transactionQuery.data.total),
-        sgstPercent: Number(transactionQuery.data.sgstPercent),
-        cgstPercent: Number(transactionQuery.data.cgstPercent),
-        sgstAmount: Number(transactionQuery.data.sgstAmount),
-        cgstAmount: Number(transactionQuery.data.cgstAmount),
+        amount: transactionQuery.data.amount.toString(),
         date: transactionQuery.data.date
           ? new Date(transactionQuery.data.date)
           : new Date(),
       }
     : {
-        date: new Date(),
         branchId: "",
+        categoryId: "",
         product: "",
-        price: 0,
-        quantity: 1,
-        sgstPercent: 0,
-        cgstPercent: 0,
-        sgstAmount: 0,
-        cgstAmount: 0,
-        total: 0,
+        amount: "",
+        date: new Date(),
       };
 
   return (

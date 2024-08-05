@@ -10,6 +10,7 @@ import { BranchForm } from "./branch-form";
 import { insertBranchSchema } from "@/db/schema";
 import { z } from "zod";
 import { useCreateBranch } from "../api/use-create-branch";
+import { useSession } from "next-auth/react";
 
 const formFields = insertBranchSchema.pick({
   name: true,
@@ -17,9 +18,10 @@ const formFields = insertBranchSchema.pick({
 
 type FormValues = z.input<typeof formFields>;
 
-const NewBranchSheet = ({ email }: { email: string }) => {
+const NewBranchSheet = () => {
   const { isOpen, onClose } = useNewBranch();
-  const mutation = useCreateBranch(email!);
+  const { data } = useSession();
+  const mutation = useCreateBranch(data?.user?.email!);
 
   const onSubmit = (data: FormValues) => {
     mutation.mutate(
