@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
-type OpenCategoryState = {
+type OpenBranchState = {
   id?: string;
   isOpen: boolean;
   onOpen: (id: string) => void;
   onClose: () => void;
 };
 
-export const useOpenCategory = create<OpenCategoryState>((set) => ({
+export const useOpenBranch = create<OpenBranchState>((set) => ({
   id: undefined,
   isOpen: false,
   onOpen: (id: string) => set({ isOpen: true, id }),

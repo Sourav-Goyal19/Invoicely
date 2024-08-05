@@ -26,7 +26,7 @@ export const DateFilter: React.FC<DateFilterProps> = ({ user }) => {
   const params = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const accountId = params.get("accountId");
+  const branchId = params.get("branchId");
   const from = params.get("from") || "";
   const to = params.get("to") || "";
   const { isLoading } = useGetSummary(user?.email!);
@@ -45,7 +45,7 @@ export const DateFilter: React.FC<DateFilterProps> = ({ user }) => {
     const query = {
       from: format(dateRange?.from || defaultFrom, "yyyy-MM-dd"),
       to: format(dateRange?.to || defaultTo, "yyyy-MM-dd"),
-      accountId,
+      branchId,
     };
 
     const url = qs.stringifyUrl(

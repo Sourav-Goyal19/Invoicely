@@ -9,8 +9,7 @@ import {
   transactionsTable,
   insertTransactionsSchema,
   usersTable,
-  accountsTable,
-  categoriesTable,
+  branchesTable,
 } from "@/db/schema";
 import {
   convertAmountFromMiliunits,
@@ -31,11 +30,11 @@ const app = new Hono()
       z.object({
         from: z.string().optional(),
         to: z.string().optional(),
-        accountId: z.string().optional(),
+        branchId: z.string().optional(),
       })
     ),
     async (ctx) => {
-      const { from, to, accountId } = ctx.req.valid("query");
+      const { from, to, branchId } = ctx.req.valid("query");
       const email = ctx.req.valid("param").email;
       if (!email) {
         return ctx.json({ error: "Email Id is required" }, 400);
@@ -60,25 +59,18 @@ const app = new Hono()
           id: transactionsTable.id,
           amount: transactionsTable.amount,
           date: transactionsTable.date,
-          payee: transactionsTable.payee,
-          accountId: transactionsTable.accountId,
-          categoryId: transactionsTable.categoryId,
-          notes: transactionsTable.notes,
-          category: categoriesTable.name,
-          account: accountsTable.name,
+          product: transactionsTable.product,
+          branchId: transactionsTable.branchId,
+          branch: branchesTable.name,
         })
         .from(transactionsTable)
         .innerJoin(
-          accountsTable,
-          eq(transactionsTable.accountId, accountsTable.id)
-        )
-        .leftJoin(
-          categoriesTable,
-          eq(transactionsTable.categoryId, categoriesTable.id)
+          branchesTable,
+          eq(transactionsTable.branchId, branchesTable.id)
         )
         .where(
           and(
-            accountId ? eq(transactionsTable.accountId, accountId) : undefined,
+            branchId ? eq(transactionsTable.branchId, branchId) : undefined,
             eq(transactionsTable.userId, user.id),
             gte(transactionsTable.date, startDate),
             lte(transactionsTable.date, endDate)
@@ -131,21 +123,14 @@ const app = new Hono()
           id: transactionsTable.id,
           amount: transactionsTable.amount,
           date: transactionsTable.date,
-          payee: transactionsTable.payee,
-          accountId: transactionsTable.accountId,
-          categoryId: transactionsTable.categoryId,
-          notes: transactionsTable.notes,
-          category: categoriesTable.name,
-          account: accountsTable.name,
+          product: transactionsTable.product,
+          branchId: transactionsTable.branchId,
+          branch: branchesTable.name,
         })
         .from(transactionsTable)
         .innerJoin(
-          accountsTable,
-          eq(accountsTable.id, transactionsTable.accountId)
-        )
-        .leftJoin(
-          categoriesTable,
-          eq(categoriesTable.id, transactionsTable.categoryId)
+          branchesTable,
+          eq(branchesTable.id, transactionsTable.branchId)
         )
         .where(
           and(
@@ -194,8 +179,8 @@ const app = new Hono()
         return c.json({ error: "User Not Found" }, 400);
       }
 
-      if (!validateUUId(values.accountId)) {
-        return c.json({ error: "Invalid Account Id" }, 400);
+      if (!validateUUId(values.branchId)) {
+        return c.json({ error: "Invalid Branch Id" }, 400);
       }
 
       const [data] = await db
@@ -287,8 +272,8 @@ const app = new Hono()
           })
           .from(transactionsTable)
           .innerJoin(
-            accountsTable,
-            eq(accountsTable.id, transactionsTable.accountId)
+            branchesTable,
+            eq(branchesTable.id, transactionsTable.branchId)
           )
           .where(
             and(
@@ -357,8 +342,8 @@ const app = new Hono()
           })
           .from(transactionsTable)
           .innerJoin(
-            accountsTable,
-            eq(accountsTable.id, transactionsTable.accountId)
+            branchesTable,
+            eq(branchesTable.id, transactionsTable.branchId)
           )
           .where(
             and(
@@ -428,8 +413,8 @@ const app = new Hono()
           })
           .from(transactionsTable)
           .innerJoin(
-            accountsTable,
-            eq(accountsTable.id, transactionsTable.accountId)
+            branchesTable,
+            eq(branchesTable.id, transactionsTable.branchId)
           )
           .where(
             and(

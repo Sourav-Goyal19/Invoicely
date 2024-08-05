@@ -9,8 +9,7 @@ import { client } from "@/lib/hono";
 import Actions from "./actions";
 import { format } from "date-fns";
 import { cn, formatCurrency } from "@/lib/utils";
-import AccountColumn from "./account-column";
-import CategoryColumn from "./category-column";
+import BranchColumn from "./account-column";
 
 export type ResponseType = InferResponseType<
   (typeof client.api)[":email"]["transactions"]["$get"],
@@ -59,37 +58,14 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   {
-    accessorKey: "category",
+    accessorKey: "product",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Category
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <CategoryColumn
-          id={row.original.id}
-          category={row.original.category}
-          categoryId={row.original.categoryId}
-        />
-      );
-    },
-  },
-  {
-    accessorKey: "payee",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Payee
+          Product
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -125,23 +101,23 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   {
-    accessorKey: "account",
+    accessorKey: "branch",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Account
+          branch
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
       return (
-        <AccountColumn
-          account={row.original.account}
-          accountId={row.original.accountId}
+        <BranchColumn
+          branch={row.original.branch}
+          branchId={row.original.branchId}
         />
       );
     },

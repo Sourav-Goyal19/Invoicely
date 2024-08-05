@@ -15,10 +15,8 @@ import { useGetTransaction } from "@/features/transactions/api/use-get-transacti
 import { useEditTransaction } from "@/features/transactions/api/use-edit-transaction";
 import { useDeleteTransaction } from "@/features/transactions/api/use-delete-transaction";
 import { useConfirm } from "@/hooks/use-confirm";
-import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
-import { useCreateAccount } from "@/features/accounts/api/use-create-account";
-import { useGetCategories } from "@/features/categories/api/use-get-categories";
-import { useCreateCategory } from "@/features/categories/api/use-create-category";
+import { useGetBranches } from "@/features/branches/api/use-get-branches";
+import { useCreateBranch } from "@/features/branches/api/use-create-branch";
 
 const apiSchema = insertTransactionsSchema.omit({
   id: true,
@@ -38,26 +36,15 @@ const EditTransactionSheet = () => {
   const transactionMutation = useEditTransaction(id!, data?.user?.email!);
   const deleteMutation = useDeleteTransaction(id!, data?.user?.email!);
 
-  const accountQuery = useGetAccounts(data?.user?.email!);
-  const accountMutation = useCreateAccount(data?.user?.email!);
-  const onCreateAccount = (name: string) =>
-    accountMutation.mutate({
+  const branchQuery = useGetBranches(data?.user?.email!);
+  const branchMutation = useCreateBranch(data?.user?.email!);
+  const onCreateBranch = (name: string) =>
+    branchMutation.mutate({
       name,
     });
-  const accountOptions = (accountQuery.data || []).map((account) => ({
-    label: account.name,
-    value: account.id,
-  }));
-
-  const categoryQuery = useGetCategories(data?.user?.email!);
-  const categoryMutation = useCreateCategory(data?.user?.email!);
-  const onCreateCategory = (name: string) =>
-    categoryMutation.mutate({
-      name,
-    });
-  const categoryOptions = (categoryQuery.data || []).map((category) => ({
-    label: category.name,
-    value: category.id,
+  const branchOptions = (branchQuery.data || []).map((branch) => ({
+    label: branch.name,
+    value: branch.id,
   }));
 
   // console.log(transactionQuery.data);
@@ -73,13 +60,9 @@ const EditTransactionSheet = () => {
   const isPending =
     transactionMutation.isPending ||
     deleteMutation.isPending ||
-    accountMutation.isPending ||
-    categoryMutation.isPending;
+    branchMutation.isPending;
 
-  const isLoading =
-    accountQuery.isLoading ||
-    categoryQuery.isLoading ||
-    transactionQuery.isLoading;
+  const isLoading = branchQuery.isLoading || transactionQuery.isLoading;
 
   const onDelete = async () => {
     const ok = await confirm();
@@ -94,22 +77,19 @@ const EditTransactionSheet = () => {
 
   const defaultValues = transactionQuery.data
     ? {
-        accountId: transactionQuery.data.accountId,
-        categoryId: transactionQuery.data.categoryId,
-        payee: transactionQuery.data.payee,
+        branchId: transactionQuery.data.branchId,
+        product: transactionQuery.data.product,
         amount: transactionQuery.data.amount.toString(),
         date: transactionQuery.data.date
           ? new Date(transactionQuery.data.date)
           : new Date(),
-        notes: transactionQuery.data.notes,
       }
     : {
-        accountId: "",
+        branchId: "",
         categoryId: "",
-        payee: "",
+        product: "",
         amount: "",
         date: new Date(),
-        notes: "",
       };
 
   return (
@@ -135,10 +115,8 @@ const EditTransactionSheet = () => {
             defaultValues={defaultValues}
             disabled={isPending}
             onDelete={onDelete}
-            accountOptions={accountOptions}
-            categoryOptions={categoryOptions}
-            onCreateAccount={onCreateAccount}
-            onCreateCategory={onCreateCategory}
+            branchOptions={branchOptions}
+            onCreateBranch={onCreateBranch}
           />
         )}
       </SheetContent>

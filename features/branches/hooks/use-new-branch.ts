@@ -1,12 +1,12 @@
 import { create } from "zustand";
 
-type NewCategoryType = {
+type NewBranchType = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
 };
 
-export const useNewCategory = create<NewCategoryType>((set) => ({
+export const useNewBranch = create<NewBranchType>((set) => ({
   isOpen: false,
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),

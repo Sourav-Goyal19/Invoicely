@@ -1,10 +1,5 @@
 import { db } from "@/db/drizzle";
-import {
-  accountsTable,
-  categoriesTable,
-  transactionsTable,
-  usersTable,
-} from "@/db/schema";
+import { branchesTable, transactionsTable, usersTable } from "@/db/schema";
 import {
   calculatePercentageChange,
   convertAmountFromMiliunits,
@@ -23,7 +18,7 @@ const app = new Hono().get(
     z.object({
       from: z.string().optional(),
       to: z.string().optional(),
-      accountId: z.string().optional(),
+      branchId: z.string().optional(),
     })
   ),
   zValidator(
@@ -33,7 +28,7 @@ const app = new Hono().get(
     })
   ),
   async (c) => {
-    const { from, to, accountId } = c.req.valid("query");
+    const { from, to, branchId } = c.req.valid("query");
     const { email } = c.req.valid("param");
 
     const [user] = await db
@@ -76,12 +71,12 @@ const app = new Hono().get(
         })
         .from(transactionsTable)
         .innerJoin(
-          accountsTable,
-          eq(accountsTable.id, transactionsTable.accountId)
+          branchesTable,
+          eq(branchesTable.id, transactionsTable.branchId)
         )
         .where(
           and(
-            accountId ? eq(transactionsTable.accountId, accountId) : undefined,
+            branchId ? eq(transactionsTable.branchId, branchId) : undefined,
             eq(transactionsTable.userId, userId),
             gte(transactionsTable.date, startDate),
             lte(transactionsTable.date, endDate)
@@ -128,46 +123,6 @@ const app = new Hono().get(
       formattedLastPeriod.remaining
     );
 
-    const category = await db
-      .select({
-        name: categoriesTable.name,
-        value: sql`SUM(ABS(${transactionsTable.amount}))`.mapWith(Number),
-      })
-      .from(transactionsTable)
-      .innerJoin(
-        accountsTable,
-        eq(accountsTable.id, transactionsTable.accountId)
-      )
-      .innerJoin(
-        categoriesTable,
-        eq(categoriesTable.id, transactionsTable.categoryId)
-      )
-      .where(
-        and(
-          accountId ? eq(transactionsTable.accountId, accountId) : undefined,
-          eq(transactionsTable.userId, user.id),
-          lt(transactionsTable.amount, 0),
-          gte(transactionsTable.date, startDate),
-          lte(transactionsTable.date, endDate)
-        )
-      )
-      .groupBy(categoriesTable.name)
-      .orderBy(desc(sql`SUM(ABS(${transactionsTable.amount}))`));
-
-    const formattedCategory = category.map((item) => ({
-      name: item.name,
-      value: convertAmountFromMiliunits(item.value),
-    }));
-
-    const topCategories = formattedCategory.slice(0, 3);
-    const otherCategories = formattedCategory.slice(3);
-    const otherSum = otherCategories.reduce((sum, curr) => sum + curr.value, 0);
-
-    const finalCategories = topCategories;
-    if (otherCategories.length > 0) {
-      finalCategories.push({ name: "Other", value: otherSum });
-    }
-
     const activeDays = await db
       .select({
         date: transactionsTable.date,
@@ -182,12 +137,12 @@ const app = new Hono().get(
       })
       .from(transactionsTable)
       .innerJoin(
-        accountsTable,
-        eq(accountsTable.id, transactionsTable.accountId)
+        branchesTable,
+        eq(branchesTable.id, transactionsTable.branchId)
       )
       .where(
         and(
-          accountId ? eq(transactionsTable.accountId, accountId) : undefined,
+          branchId ? eq(transactionsTable.branchId, branchId) : undefined,
           eq(transactionsTable.userId, user.id),
           gte(transactionsTable.date, startDate),
           lte(transactionsTable.date, endDate)
@@ -213,7 +168,6 @@ const app = new Hono().get(
           incomeChange: incomeChange,
           expensesAmount: formattedCurrentPeriod.expenses,
           expensesChange: expensesChange,
-          categories: finalCategories,
           days: days,
         },
       },

@@ -4,17 +4,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
-  (typeof client.api)[":email"]["categories"]["bulk-delete"]["$post"]
+  (typeof client.api)[":email"]["branches"]["bulk-delete"]["$post"]
 >;
 type RequestType = InferRequestType<
-  (typeof client.api)[":email"]["categories"]["bulk-delete"]["$post"]
+  (typeof client.api)[":email"]["branches"]["bulk-delete"]["$post"]
 >["json"];
 
-export const useBulkDeleteCategories = (email: string) => {
+export const useBulkDeleteBranches = (email: string) => {
   const queryClient = useQueryClient();
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (data) => {
-      const response = await client.api[":email"]["categories"][
+      const response = await client.api[":email"]["branches"][
         "bulk-delete"
       ].$post({
         json: data,
@@ -32,12 +32,12 @@ export const useBulkDeleteCategories = (email: string) => {
       return response.json();
     },
     onSuccess: () => {
-      toast.success("Categories deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Branche(s) deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["branches"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to delete categories");
+      toast.error(error.message || "Failed to delete branche(s)");
     },
   });
   return mutation;

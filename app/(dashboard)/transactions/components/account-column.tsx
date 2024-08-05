@@ -1,17 +1,14 @@
-import { useOpenAccount } from "@/features/accounts/hooks/use-edit-account";
+import { useOpenBranch } from "@/features/branches/hooks/use-edit-branch";
 
-interface AccountColumnProps {
-  account: string;
-  accountId: string;
+interface BranchColumnProps {
+  branch: string;
+  branchId: string;
 }
 
-const AccountColumn: React.FC<AccountColumnProps> = ({
-  account,
-  accountId,
-}) => {
-  const { onOpen } = useOpenAccount();
+const BranchColumn: React.FC<BranchColumnProps> = ({ branch, branchId }) => {
+  const { onOpen } = useOpenBranch();
   const handleClick = () => {
-    onOpen(accountId);
+    onOpen(branchId);
   };
 
   return (
@@ -19,9 +16,9 @@ const AccountColumn: React.FC<AccountColumnProps> = ({
       onClick={handleClick}
       className="flex items-center cursor-pointer hover:underline"
     >
-      {account}
+      {branch}
     </div>
   );
 };
 
-export default AccountColumn;
+export default BranchColumn;

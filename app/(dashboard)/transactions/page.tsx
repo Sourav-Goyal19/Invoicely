@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const metadata: Metadata = {
   title: "Transactions | FinFlow",
   description:
-    "Easily manage your financial transactions with FinFlow. Create, edit, and view transactions with custom accounts and categories. Sort, search, and paginate through your financial history effortlessly.",
+    "Easily manage your financial transactions with FinFlow. Create, edit, and view transactions with custom branches and categories. Sort, search, and paginate through your financial history effortlessly.",
 };
 
 const TransactionsPage = () => {

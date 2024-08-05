@@ -8,12 +8,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useCreateAccount } from "@/features/accounts/api/use-create-account";
-import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
+import { useCreateBranch } from "@/features/branches/api/use-create-branch";
+import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";
 
-export const useSelectAccount = (): [
+export const useSelectBranch = (): [
   () => JSX.Element,
   () => Promise<unknown>
 ] => {
@@ -24,15 +24,15 @@ export const useSelectAccount = (): [
   const selectValue = useRef<string>();
   const { data } = useSession();
 
-  const accountQuery = useGetAccounts(data?.user?.email!);
-  const accountMutation = useCreateAccount(data?.user?.email!);
+  const branchQuery = useGetBranches(data?.user?.email!);
+  const branchMutation = useCreateBranch(data?.user?.email!);
 
-  const onCreateAccount = (name: string) => {
-    accountMutation.mutate({ name });
+  const onCreateBranch = (name: string) => {
+    branchMutation.mutate({ name });
   };
-  const accountOptions = (accountQuery.data || []).map((account) => ({
-    value: account.id,
-    label: account.name,
+  const branchOptions = (branchQuery.data || []).map((branch) => ({
+    value: branch.id,
+    label: branch.name,
   }));
 
   const confirm = () =>
@@ -58,19 +58,19 @@ export const useSelectAccount = (): [
     <Dialog open={promise !== null} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Select Account</DialogTitle>
+          <DialogTitle>Select Branch</DialogTitle>
           <DialogDescription>
-            Please select an account to continue
+            Please select branch to continue
           </DialogDescription>
         </DialogHeader>
         <Select
-          options={accountOptions}
-          placeholder="Select an account"
-          onCreate={onCreateAccount}
-          onChange={(accountId) => {
-            selectValue.current = accountId;
+          options={branchOptions}
+          placeholder="Select an branch"
+          onCreate={onCreateBranch}
+          onChange={(branchId) => {
+            selectValue.current = branchId;
           }}
-          disabled={accountMutation.isPending || accountQuery.isLoading}
+          disabled={branchMutation.isPending || branchQuery.isLoading}
         />
         <DialogFooter className="pt-2 gap-2 ">
           <Button variant="outline" onClick={handleCancel}>

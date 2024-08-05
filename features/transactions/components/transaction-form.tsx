@@ -23,11 +23,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 const formFields = z.object({
   date: z.coerce.date(),
-  accountId: z.string().trim(),
-  categoryId: z.string().nullable().optional(),
-  payee: z.string().trim(),
+  branchId: z.string().trim(),
+  product: z.string().trim(),
   amount: z.string().trim(),
-  notes: z.string().nullable().optional(),
 });
 
 const apiSchema = insertTransactionsSchema.omit({
@@ -44,10 +42,8 @@ interface TransactionFormProps {
   onSubmit: (values: ApiFormValues) => void;
   onDelete?: () => void;
   disabled?: boolean;
-  accountOptions: { label: string; value: string }[];
-  categoryOptions: { label: string; value: string }[];
-  onCreateAccount: (name: string) => void;
-  onCreateCategory: (name: string) => void;
+  branchOptions: { label: string; value: string }[];
+  onCreateBranch: (name: string) => void;
 }
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
@@ -56,10 +52,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   onSubmit,
   onDelete,
   disabled,
-  accountOptions,
-  categoryOptions,
-  onCreateAccount,
-  onCreateCategory,
+  branchOptions,
+  onCreateBranch,
 }) => {
   const form = useForm<FormValues>({
     defaultValues: defaultValues,
@@ -103,16 +97,16 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
           <FormField
             control={form.control}
-            name="accountId"
+            name="branchId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Account</FormLabel>
+                <FormLabel>Branch</FormLabel>
                 <FormControl>
                   <Select
-                    placeholder="Select an account"
-                    options={accountOptions}
+                    placeholder="Select a branch"
+                    options={branchOptions}
                     onChange={field.onChange}
-                    onCreate={onCreateAccount}
+                    onCreate={onCreateBranch}
                     value={field.value}
                     disabled={disabled}
                   />
@@ -123,33 +117,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           />
           <FormField
             control={form.control}
-            name="categoryId"
+            name="product"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Select
-                    placeholder="Select a category"
-                    options={categoryOptions}
-                    onChange={field.onChange}
-                    onCreate={onCreateCategory}
-                    value={field.value}
-                    disabled={disabled}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="payee"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Payee</FormLabel>
+                <FormLabel>Product</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Add a payee"
+                    placeholder="Add a product"
                     disabled={disabled}
                     {...field}
                   />
@@ -171,24 +145,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                     disabled={disabled}
                     value={field.value}
                     onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    value={field.value ?? ""}
-                    placeholder="Optional Notes"
-                    disabled={disabled}
                   />
                 </FormControl>
                 <FormMessage />

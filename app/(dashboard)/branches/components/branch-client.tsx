@@ -3,23 +3,23 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable } from "@/components/data-table";
-import { useNewAccount } from "@/features/accounts/hooks/use-new-account";
+import { useNewBranch } from "@/features/branches/hooks/use-new-branch";
 import { Loader2, Plus } from "lucide-react";
 import { columns, ResponseType } from "./column";
-import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
+import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "next-auth/react";
-import { useBulkDeleteAccounts } from "@/features/accounts/api/use-bulk-delete-accounts";
+import { useBulkDeleteBranches } from "@/features/branches/api/use-bulk-delete-branches";
 
 const BranchesPageClient = () => {
-  const { onOpen } = useNewAccount();
+  const { onOpen } = useNewBranch();
   const { data: authdata } = useSession();
-  const accountQuery = useGetAccounts(authdata?.user?.email!);
-  const deleteAccounts = useBulkDeleteAccounts(authdata?.user?.email!);
+  const branchQuery = useGetBranches(authdata?.user?.email!);
+  const deleteBranches = useBulkDeleteBranches(authdata?.user?.email!);
 
-  const isDisabled = accountQuery.isLoading || deleteAccounts.isPending;
+  const isDisabled = branchQuery.isLoading || deleteBranches.isPending;
 
-  if (accountQuery.isLoading) {
+  if (branchQuery.isLoading) {
     return (
       <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
         <Card className="border-none drop-shadow-sm">
@@ -36,7 +36,7 @@ const BranchesPageClient = () => {
     );
   }
 
-  const data: ResponseType[] = accountQuery.data || [];
+  const data: ResponseType[] = branchQuery.data || [];
   return (
     <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
       <Card className="border-none drop-shadow-sm">
@@ -54,7 +54,7 @@ const BranchesPageClient = () => {
             filterKey="name"
             onDelete={(rows) => {
               const ids = rows.map((r) => r.original.id);
-              const deleted = deleteAccounts.mutate({
+              const deleted = deleteBranches.mutate({
                 ids,
               });
               console.log(deleted);

@@ -16,7 +16,7 @@ import { useNewTransaction } from "@/features/transactions/hooks/use-new-transac
 import { useGetTransactions } from "@/features/transactions/api/use-get-transactions";
 import { useState } from "react";
 import { UploadButton } from "./upload-button";
-import { useSelectAccount } from "@/hooks/use-select-account";
+import { useSelectBranch } from "@/hooks/use-select-branch";
 import ImportCard from "./import-card";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -31,7 +31,7 @@ const INITIAL_IMPORT_RESULTS = {
 };
 
 const CsvFormFields = insertTransactionsSchema.omit({
-  accountId: true,
+  branchId: true,
   userId: true,
   id: true,
 });
@@ -49,7 +49,7 @@ const TransactionsPageClient = () => {
   const deletetransactions = useBulkDeleteTransactions(authdata?.user?.email!);
   const bulkCreateMutation = useBulkCreateTransactions(authdata?.user?.email!);
 
-  const [AccountDialog, confirm] = useSelectAccount();
+  const [BranchDialog, confirm] = useSelectBranch();
 
   const isDisabled = TransactionQuery.isLoading || deletetransactions.isPending;
 
@@ -65,15 +65,15 @@ const TransactionsPageClient = () => {
 
   const handleSubmitImport = async (values: CsvFormValues[]) => {
     console.log(values);
-    const accountId = await confirm();
+    const branchId = await confirm();
 
-    if (!accountId) {
-      return toast.error("Please select an account to continue.");
+    if (!branchId) {
+      return toast.error("Please select a branch to continue.");
     }
 
     const data = values.map((v) => ({
       ...v,
-      accountId: accountId as string,
+      branchId: branchId as string,
     }));
 
     bulkCreateMutation.mutate(data, {
@@ -103,7 +103,7 @@ const TransactionsPageClient = () => {
   if (variant == "IMPORT") {
     return (
       <>
-        <AccountDialog />
+        <BranchDialog />
         <ImportCard
           data={importResults.data}
           onCancel={onCancelImport}

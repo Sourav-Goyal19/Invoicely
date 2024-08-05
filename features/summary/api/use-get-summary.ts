@@ -6,15 +6,15 @@ export const useGetSummary = (email: string) => {
   const params = useSearchParams();
   const from = params.get("from") || "";
   const to = params.get("to") || "";
-  const accountId = params.get("accountId") || "";
+  const branchId = params.get("branchId") || "";
   const query = useQuery({
-    queryKey: ["summary", { from, to, accountId }],
+    queryKey: ["summary", { from, to, branchId }],
     queryFn: async () => {
       const response = await client.api[":email"].summary.$get({
         query: {
           from,
           to,
-          accountId,
+          branchId,
         },
         param: {
           email,

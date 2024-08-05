@@ -4,15 +4,15 @@ import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
-  (typeof client.api)[":email"]["categories"][":id"]["$delete"]
+  (typeof client.api)[":email"]["branches"][":id"]["$delete"]
 >;
 
-export const useDeleteCategory = (id: string, email: string) => {
+export const useDeleteBranch = (id: string, email: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<ResponseType, Error>({
     mutationFn: async () => {
-      const response = await client.api[":email"].categories[":id"].$delete({
+      const response = await client.api[":email"].branches[":id"].$delete({
         param: {
           id,
           email,
@@ -28,15 +28,15 @@ export const useDeleteCategory = (id: string, email: string) => {
       return response.json();
     },
     onSuccess: () => {
-      toast.success("Category deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Branch deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["branches"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
-      queryClient.invalidateQueries({ queryKey: ["category", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["branch", { id }] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.log(error);
-      toast.error(error.message || "Failed to delete category");
+      toast.error(error.message || "Failed to delete branch");
     },
   });
 };

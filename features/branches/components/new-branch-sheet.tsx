@@ -5,23 +5,23 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useNewAccount } from "../hooks/use-new-account";
-import { AccountForm } from "./account-form";
-import { insertAccountSchema } from "@/db/schema";
+import { useNewBranch } from "../hooks/use-new-branch";
+import { BranchForm } from "./branch-form";
+import { insertBranchSchema } from "@/db/schema";
 import { z } from "zod";
-import { useCreateAccount } from "../api/use-create-account";
+import { useCreateBranch } from "../api/use-create-branch";
 import { useSession } from "next-auth/react";
 
-const formFields = insertAccountSchema.pick({
+const formFields = insertBranchSchema.pick({
   name: true,
 });
 
 type FormValues = z.input<typeof formFields>;
 
-const NewAccountSheet = () => {
-  const { isOpen, onClose } = useNewAccount();
+const NewBranchSheet = () => {
+  const { isOpen, onClose } = useNewBranch();
   const { data } = useSession();
-  const mutation = useCreateAccount(data?.user?.email!);
+  const mutation = useCreateBranch(data?.user?.email!);
 
   const onSubmit = (data: FormValues) => {
     mutation.mutate(
@@ -40,15 +40,15 @@ const NewAccountSheet = () => {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="space-y-4">
         <SheetHeader>
-          <SheetTitle> New Account </SheetTitle>
+          <SheetTitle> New Branch </SheetTitle>
           <SheetDescription>
-            Create a new account to track your transactions.
+            Create a new branch to track your transactions.
           </SheetDescription>
         </SheetHeader>
-        <AccountForm onSubmit={onSubmit} disabled={mutation.isPending} />
+        <BranchForm onSubmit={onSubmit} disabled={mutation.isPending} />
       </SheetContent>
     </Sheet>
   );
 };
 
-export default NewAccountSheet;
+export default NewBranchSheet;

@@ -8,19 +8,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { insertAccountSchema } from "@/db/schema";
+import { insertBranchSchema } from "@/db/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formFields = insertAccountSchema.pick({
+const formFields = insertBranchSchema.pick({
   name: true,
 });
 
 type FormValues = z.input<typeof formFields>;
 
-interface AccountFormProps {
+interface BranchFormProps {
   id?: string;
   defaultValues?: FormValues;
   onSubmit: (values: FormValues) => void;
@@ -28,7 +28,7 @@ interface AccountFormProps {
   disabled?: boolean;
 }
 
-export const AccountForm: React.FC<AccountFormProps> = ({
+export const BranchForm: React.FC<BranchFormProps> = ({
   id,
   defaultValues,
   onSubmit,
@@ -77,7 +77,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
             type="submit"
             disabled={disabled || form.watch("name").length < 1}
           >
-            {id ? "Save Changes" : "Create Account"}
+            {id ? "Save Changes" : "Create Branch"}
           </Button>
           {!!id && (
             <Button
@@ -88,7 +88,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
               className="flex items-center justify-center w-full gap-2"
             >
               <Trash className="size-4 mr-2" />
-              Delete Account
+              Delete Branch
             </Button>
           )}
         </form>

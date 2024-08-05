@@ -2,12 +2,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono";
 
-export const useGetAccount = (id: string, email: string) => {
+export const useGetBranch = (id: string, email: string) => {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["account", { id }],
+    queryKey: ["branch", { id }],
     queryFn: async () => {
-      const res = await client.api[":email"].accounts[":id"].$get({
+      const res = await client.api[":email"].branches[":id"].$get({
         param: {
           email,
           id,
@@ -15,7 +15,7 @@ export const useGetAccount = (id: string, email: string) => {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to fetch account");
+        throw new Error("Failed to fetch branch");
       }
       const { data } = await res.json();
       return data;

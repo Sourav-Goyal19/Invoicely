@@ -15,10 +15,8 @@ import { TransactionForm } from "./transaction-form";
 import { useNewTransaction } from "../hooks/use-new-transaction";
 import { useCreateTransaction } from "../api/use-create-transaction";
 
-import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
-import { useCreateAccount } from "@/features/accounts/api/use-create-account";
-import { useGetCategories } from "@/features/categories/api/use-get-categories";
-import { useCreateCategory } from "@/features/categories/api/use-create-category";
+import { useGetBranches } from "@/features/branches/api/use-get-branches";
+import { useCreateBranch } from "@/features/branches/api/use-create-branch";
 
 const apiFormFields = insertTransactionsSchema.omit({ id: true, userId: true });
 
@@ -28,36 +26,22 @@ const NewTransactionSheet = () => {
   const { isOpen, onClose } = useNewTransaction();
   const { data } = useSession();
 
-  const accountQuery = useGetAccounts(data?.user?.email!);
-  const accountMutation = useCreateAccount(data?.user?.email!);
-  const onCreateAccount = (name: string) =>
-    accountMutation.mutate({
+  const branchQuery = useGetBranches(data?.user?.email!);
+  const branchMutation = useCreateBranch(data?.user?.email!);
+  const onCreateBranch = (name: string) =>
+    branchMutation.mutate({
       name,
     });
-  const accountOptions = (accountQuery.data || []).map((account) => ({
-    label: account.name,
-    value: account.id,
-  }));
-
-  const categoryQuery = useGetCategories(data?.user?.email!);
-  const categoryMutation = useCreateCategory(data?.user?.email!);
-  const onCreateCategory = (name: string) =>
-    categoryMutation.mutate({
-      name,
-    });
-  const categoryOptions = (categoryQuery.data || []).map((category) => ({
-    label: category.name,
-    value: category.id,
+  const branchOptions = (branchQuery.data || []).map((branch) => ({
+    label: branch.name,
+    value: branch.id,
   }));
 
   const transactionMutation = useCreateTransaction(data?.user?.email!);
 
-  const isPending =
-    accountMutation.isPending ||
-    categoryMutation.isPending ||
-    transactionMutation.isPending;
+  const isPending = branchMutation.isPending || transactionMutation.isPending;
 
-  const isLoading = accountQuery.isLoading || categoryQuery.isLoading;
+  const isLoading = branchQuery.isLoading;
 
   const onSubmit = (data: ApiFormValues) => {
     transactionMutation.mutate(data, {
@@ -85,10 +69,8 @@ const NewTransactionSheet = () => {
           <TransactionForm
             onSubmit={onSubmit}
             disabled={isPending}
-            accountOptions={accountOptions}
-            categoryOptions={categoryOptions}
-            onCreateAccount={onCreateAccount}
-            onCreateCategory={onCreateCategory}
+            branchOptions={branchOptions}
+            onCreateBranch={onCreateBranch}
           />
         )}
       </SheetContent>

@@ -6,36 +6,36 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { z } from "zod";
-import { CategoryForm } from "./category-form";
-import { insertCategorySchema } from "@/db/schema";
-import { useOpenCategory } from "../hooks/use-edit-category";
-import { useGetCategory } from "../api/use-get-category";
+import { BranchForm } from "./branch-form";
+import { insertBranchSchema } from "@/db/schema";
+import { useOpenBranch } from "../hooks/use-edit-branch";
+import { useGetBranch } from "../api/use-get-branch";
 import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
-import { useEditCategory } from "../api/use-edit-category";
-import { useDeleteCategory } from "../api/use-delete-category";
+import { useEditBranch } from "../api/use-edit-branch";
+import { useDeleteBranch } from "../api/use-delete-branch";
 import { useConfirm } from "@/hooks/use-confirm";
 
-const formFields = insertCategorySchema.pick({
+const formFields = insertBranchSchema.pick({
   name: true,
 });
 
 type FormValues = z.input<typeof formFields>;
 
-const EditCategorySheet = () => {
+const EditBranchSheet = () => {
   const { data } = useSession();
-  const { isOpen, onClose, id } = useOpenCategory();
+  const { isOpen, onClose, id } = useOpenBranch();
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",
-    "You are about to delete this category."
+    "You are about to delete this branch"
   );
 
-  const categoryQuery = useGetCategory(id!, data?.user?.email!);
+  const branchQuery = useGetBranch(id!, data?.user?.email!);
 
-  // console.log(CategoryQuery.data);
+  // console.log(branchQuery.data);
 
-  const mutation = useEditCategory(id!, data?.user?.email!);
-  const deleteMutation = useDeleteCategory(id!, data?.user?.email!);
+  const mutation = useEditBranch(id!, data?.user?.email!);
+  const deleteMutation = useDeleteBranch(id!, data?.user?.email!);
 
   const onSubmit = (data: FormValues) => {
     mutation.mutate(data, {
@@ -58,28 +58,28 @@ const EditCategorySheet = () => {
     }
   };
 
-  const defaultValues = categoryQuery.data && {
-    name: categoryQuery.data?.name,
+  const defaultValues = branchQuery.data && {
+    name: branchQuery.data?.name,
   };
 
   return (
     <Sheet
-      open={isOpen && categoryQuery.data != undefined}
+      open={isOpen && branchQuery.data != undefined}
       onOpenChange={onClose}
     >
       <ConfirmDialog />
-      <SheetContent>
+      <SheetContent className="space-y-4">
         <SheetHeader>
-          <SheetTitle> Edit Category </SheetTitle>
-          <SheetDescription>Edit an existing category.</SheetDescription>
+          <SheetTitle> Edit Branch </SheetTitle>
+          <SheetDescription>Edit an existing branch.</SheetDescription>
         </SheetHeader>
 
-        {categoryQuery.isLoading ? (
+        {branchQuery.isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <CategoryForm
+          <BranchForm
             id={id}
             onSubmit={onSubmit}
             defaultValues={defaultValues}
@@ -92,4 +92,4 @@ const EditCategorySheet = () => {
   );
 };
 
-export default EditCategorySheet;
+export default EditBranchSheet;

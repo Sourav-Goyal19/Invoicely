@@ -4,23 +4,22 @@ import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
-  (typeof client.api)[":email"]["categories"][":id"]["$patch"]
+  (typeof client.api)[":email"]["branches"]["$post"]
 >;
 type RequestType = InferRequestType<
-  (typeof client.api)[":email"]["categories"][":id"]["$patch"]
+  (typeof client.api)[":email"]["branches"]["$post"]
 >["json"];
 
-export const useEditCategory = (id: string, email: string) => {
+export const useCreateBranch = (email: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
-      const response = await client.api[":email"].categories[":id"].$patch({
+      const response = await client.api[":email"].branches.$post({
+        json,
         param: {
-          id,
           email,
         },
-        json,
       });
 
       if (!response.ok) {
@@ -32,15 +31,12 @@ export const useEditCategory = (id: string, email: string) => {
       return response.json();
     },
     onSuccess: () => {
-      toast.success("Category updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      toast.success("Branch created successfully");
+      queryClient.invalidateQueries({ queryKey: ["branches"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
-      queryClient.invalidateQueries({ queryKey: ["category", { id }] });
     },
     onError: (error) => {
-      console.log(error);
-      toast.error(error.message || "Failed to update category");
+      toast.error(error.message || "Failed to create branch");
     },
   });
 };

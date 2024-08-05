@@ -6,9 +6,9 @@ export const useGetTransactions = (email: string) => {
   const params = useSearchParams();
   const from = params.get("from") || "";
   const to = params.get("to") || "";
-  const accountId = params.get("accountId") || "";
+  const branchId = params.get("branchId") || "";
   const query = useQuery({
-    queryKey: ["transactions", { from, to, accountId }],
+    queryKey: ["transactions", { from, to, branchId }],
     queryFn: async () => {
       const res = await client.api[":email"].transactions.$get({
         param: {
@@ -17,7 +17,7 @@ export const useGetTransactions = (email: string) => {
         query: {
           from,
           to,
-          accountId,
+          branchId,
         },
       });
 

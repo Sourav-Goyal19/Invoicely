@@ -12,37 +12,37 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import qs from "query-string";
 
-import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
+import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useGetSummary } from "@/features/summary/api/use-get-summary";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-interface AccountFilterProps {
+interface BranchFilterProps {
   user?: UserData | null;
 }
 
-export const AccountFilter: React.FC<AccountFilterProps> = ({ user }) => {
+export const BranchFilter: React.FC<BranchFilterProps> = ({ user }) => {
   const params = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const accountId = params.get("accountId") || "all";
+  const branchId = params.get("branchId") || "all";
   const from = params.get("from") || "";
   const to = params.get("to") || "";
 
-  const { data: accounts, isLoading: accountsLoading } = useGetAccounts(
+  const { data: branches, isLoading: branchesLoading } = useGetBranches(
     user?.email!
   );
   const { isLoading: summaryLoading } = useGetSummary(user?.email!);
 
   const onChange = (newValue: string) => {
     const query = {
-      accountId: newValue,
+      branchId: newValue,
       from,
       to,
     };
 
     if (newValue == "all") {
-      query.accountId = "";
+      query.branchId = "";
     }
 
     const url = qs.stringifyUrl(
@@ -56,24 +56,24 @@ export const AccountFilter: React.FC<AccountFilterProps> = ({ user }) => {
     router.push(url);
   };
 
-  if (accountsLoading) {
+  if (branchesLoading) {
     return <Skeleton className="w-full lg:w-auto h-9 rounded-md" />;
   }
 
   return (
     <Select
-      value={accountId}
+      value={branchId}
       onValueChange={onChange}
-      disabled={accountsLoading || summaryLoading}
+      disabled={branchesLoading || summaryLoading}
     >
       <SelectTrigger className="w-full lg:w-auto h-9 rounded-md px-3 font-normal bg-white/10 hover:bg-white/20 hover:text-white border-none focus:ring-offset-0 focus:ring-transparent outline-none text-white focus:bg-white/30 transition">
-        <SelectValue placeholder="Select Account" />
+        <SelectValue placeholder="Select Branch" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">All Accounts</SelectItem>
-        {accounts?.map((account) => (
-          <SelectItem key={account.id} value={account.id}>
-            {account.name}
+        <SelectItem value="all">All Branches</SelectItem>
+        {branches?.map((branch) => (
+          <SelectItem key={branch.id} value={branch.id}>
+            {branch.name}
           </SelectItem>
         ))}
       </SelectContent>

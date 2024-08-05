@@ -7,8 +7,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { useDeleteAccount } from "@/features/accounts/api/use-delete-account";
-import { useOpenAccount } from "@/features/accounts/hooks/use-edit-account";
+import { useDeleteBranch } from "@/features/branches/api/use-delete-branch";
+import { useOpenBranch } from "@/features/branches/hooks/use-edit-branch";
 import { useConfirm } from "@/hooks/use-confirm";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -18,12 +18,12 @@ interface ActionsProps {
 }
 
 const Actions: React.FC<ActionsProps> = ({ id }) => {
-  const { onOpen } = useOpenAccount();
+  const { onOpen } = useOpenBranch();
   const { data } = useSession();
-  const deleteMutation = useDeleteAccount(id, data?.user?.email!);
+  const deleteMutation = useDeleteBranch(id, data?.user?.email!);
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",
-    "You are about to delete this account"
+    "You are about to delete this branch"
   );
 
   const handleDelete = async () => {
