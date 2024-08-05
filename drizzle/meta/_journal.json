@@ -8,6 +8,20 @@
       "when": 1722844908099,
       "tag": "0000_handy_hellfire_club",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1722848218792,
+      "tag": "0001_closed_joseph",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1722869946491,
+      "tag": "0002_strong_carnage",
+      "breakpoints": true
     }
   ]
 }

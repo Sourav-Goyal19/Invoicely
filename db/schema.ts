@@ -6,6 +6,7 @@ import {
   varchar,
   uuid,
   integer,
+  decimal,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -51,14 +52,22 @@ export const insertBranchSchema = createInsertSchema(branchesTable);
 
 export const transactionsTable = pgTable("transactions", {
   id: uuid("id").defaultRandom().primaryKey(),
-  amount: integer("amount").notNull(),
+  price: integer("price").notNull(),
   product: text("product").notNull(),
   quantity: integer("quantity").notNull().default(1),
-  cgstPercent: integer("cgst_percent").notNull().default(0),
-  sgstPercent: integer("sgst_percent").notNull().default(0),
-  cgstAmount: integer("cgst_amount").notNull().default(0),
-  sgstAmount: integer("sgst_amount").notNull().default(0),
-  total: integer("total").notNull().default(0),
+  cgstPercent: decimal("cgst_percent", { precision: 5, scale: 2 })
+    .notNull()
+    .default("0"),
+  sgstPercent: decimal("sgst_percent", { precision: 5, scale: 2 })
+    .notNull()
+    .default("0"),
+  cgstAmount: decimal("cgst_amount", { precision: 10, scale: 2 })
+    .notNull()
+    .default("0"),
+  sgstAmount: decimal("sgst_amount", { precision: 10, scale: 2 })
+    .notNull()
+    .default("0"),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull().default("0"),
   date: timestamp("date", { mode: "date" }).notNull(),
   branchId: uuid("branch_id")
     .references(() => branchesTable.id, {
@@ -85,7 +94,12 @@ export const transactionsRelations = relations(
     }),
   })
 );
-
 export const insertTransactionsSchema = createInsertSchema(transactionsTable, {
   date: z.coerce.date(),
+  price: z.coerce.number().multipleOf(0.01),
+  cgstPercent: z.coerce.number().min(0).max(100).multipleOf(0.01),
+  sgstPercent: z.coerce.number().min(0).max(100).multipleOf(0.01),
+  cgstAmount: z.coerce.number().multipleOf(0.01),
+  sgstAmount: z.coerce.number().multipleOf(0.01),
+  total: z.coerce.number().multipleOf(0.01),
 });

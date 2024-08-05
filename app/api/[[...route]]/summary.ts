@@ -2,7 +2,7 @@ import { db } from "@/db/drizzle";
 import { branchesTable, transactionsTable, usersTable } from "@/db/schema";
 import {
   calculatePercentageChange,
-  convertAmountFromMiliunits,
+  convertPriceFromMiliunits,
   fillMissingDays,
 } from "@/lib/utils";
 import { zValidator } from "@hono/zod-validator";
@@ -60,14 +60,14 @@ const app = new Hono().get(
       return await db
         .select({
           income:
-            sql`SUM(CASE WHEN ${transactionsTable.amount} >= 0 THEN ${transactionsTable.amount} ELSE 0 END)`.mapWith(
+            sql`SUM(CASE WHEN ${transactionsTable.price} >= 0 THEN ${transactionsTable.price} ELSE 0 END)`.mapWith(
               Number
             ),
           expenses:
-            sql`SUM(CASE WHEN ${transactionsTable.amount} < 0 THEN ${transactionsTable.amount} ELSE 0 END)`.mapWith(
+            sql`SUM(CASE WHEN ${transactionsTable.price} < 0 THEN ${transactionsTable.price} ELSE 0 END)`.mapWith(
               Number
             ),
-          remaining: sum(transactionsTable.amount).mapWith(Number),
+          remaining: sum(transactionsTable.price).mapWith(Number),
         })
         .from(transactionsTable)
         .innerJoin(
@@ -97,15 +97,15 @@ const app = new Hono().get(
     );
 
     const formattedCurrentPeriod = {
-      income: convertAmountFromMiliunits(currentPeriod.income),
-      expenses: convertAmountFromMiliunits(currentPeriod.expenses),
-      remaining: convertAmountFromMiliunits(currentPeriod.remaining),
+      income: convertPriceFromMiliunits(currentPeriod.income),
+      expenses: convertPriceFromMiliunits(currentPeriod.expenses),
+      remaining: convertPriceFromMiliunits(currentPeriod.remaining),
     };
 
     const formattedLastPeriod = {
-      income: convertAmountFromMiliunits(lastPeriod.income),
-      expenses: convertAmountFromMiliunits(lastPeriod.expenses),
-      remaining: convertAmountFromMiliunits(lastPeriod.remaining),
+      income: convertPriceFromMiliunits(lastPeriod.income),
+      expenses: convertPriceFromMiliunits(lastPeriod.expenses),
+      remaining: convertPriceFromMiliunits(lastPeriod.remaining),
     };
 
     const incomeChange = calculatePercentageChange(
@@ -127,11 +127,11 @@ const app = new Hono().get(
       .select({
         date: transactionsTable.date,
         income:
-          sql`SUM(CASE WHEN ${transactionsTable.amount} >= 0 THEN ${transactionsTable.amount} ELSE 0 END)`.mapWith(
+          sql`SUM(CASE WHEN ${transactionsTable.price} >= 0 THEN ${transactionsTable.price} ELSE 0 END)`.mapWith(
             Number
           ),
         expenses:
-          sql`SUM(CASE WHEN ${transactionsTable.amount} < 0 THEN ABS(${transactionsTable.amount}) ELSE 0 END)`.mapWith(
+          sql`SUM(CASE WHEN ${transactionsTable.price} < 0 THEN ABS(${transactionsTable.price}) ELSE 0 END)`.mapWith(
             Number
           ),
       })
@@ -153,8 +153,8 @@ const app = new Hono().get(
 
     const formattedActiveDays = activeDays.map((item) => ({
       date: item.date,
-      income: convertAmountFromMiliunits(item.income),
-      expenses: convertAmountFromMiliunits(item.expenses),
+      income: convertPriceFromMiliunits(item.income),
+      expenses: convertPriceFromMiliunits(item.expenses),
     }));
 
     const days = fillMissingDays(formattedActiveDays, startDate, endDate);
@@ -162,11 +162,11 @@ const app = new Hono().get(
     return c.json(
       {
         data: {
-          remainingAmount: formattedCurrentPeriod.remaining,
+          remainingprice: formattedCurrentPeriod.remaining,
           remainingChange: remainingChange,
-          incomeAmount: formattedCurrentPeriod.income,
+          incomeprice: formattedCurrentPeriod.income,
           incomeChange: incomeChange,
-          expensesAmount: formattedCurrentPeriod.expenses,
+          expensesprice: formattedCurrentPeriod.expenses,
           expensesChange: expensesChange,
           days: days,
         },

@@ -12,8 +12,8 @@ import {
   branchesTable,
 } from "@/db/schema";
 import {
-  convertAmountFromMiliunits,
-  convertAmountToMiliunits,
+  convertPriceFromMiliunits,
+  convertPriceToMiliunits,
 } from "@/lib/utils";
 
 const app = new Hono()
@@ -57,7 +57,7 @@ const app = new Hono()
       const data = await db
         .select({
           id: transactionsTable.id,
-          amount: transactionsTable.amount,
+          price: transactionsTable.price,
           date: transactionsTable.date,
           product: transactionsTable.product,
           branchId: transactionsTable.branchId,
@@ -81,7 +81,7 @@ const app = new Hono()
       const formattedData = data.map((item) => {
         return {
           ...item,
-          amount: convertAmountFromMiliunits(item.amount),
+          price: convertPriceFromMiliunits(item.price),
         };
       });
 
@@ -121,7 +121,7 @@ const app = new Hono()
       const [data] = await db
         .select({
           id: transactionsTable.id,
-          amount: transactionsTable.amount,
+          price: transactionsTable.price,
           date: transactionsTable.date,
           product: transactionsTable.product,
           branchId: transactionsTable.branchId,
@@ -145,7 +145,7 @@ const app = new Hono()
 
       const formattedData = {
         ...data,
-        amount: convertAmountFromMiliunits(data.amount),
+        price: convertPriceFromMiliunits(data.price),
       };
 
       return c.json({ data: formattedData }, 200);
@@ -188,7 +188,12 @@ const app = new Hono()
         .values({
           ...values,
           userId: user.id,
-          amount: convertAmountToMiliunits(values.amount),
+          price: convertPriceToMiliunits(values.price),
+          sgstPercent: values.sgstPercent?.toString(),
+          cgstPercent: values.cgstPercent?.toString(),
+          sgstAmount: values.sgstAmount?.toString(),
+          cgstAmount: values.cgstAmount?.toString(),
+          total: values.total?.toString(),
         })
         .returning();
 
@@ -231,7 +236,12 @@ const app = new Hono()
           values.map((v) => ({
             ...v,
             userId: user.id,
-            amount: convertAmountToMiliunits(v.amount),
+            price: convertPriceToMiliunits(v.price),
+            sgstPercent: v.sgstPercent?.toString(),
+            cgstPercent: v.cgstPercent?.toString(),
+            sgstAmount: v.sgstAmount?.toString(),
+            cgstAmount: v.cgstAmount?.toString(),
+            total: v.total?.toString(),
           }))
         )
         .returning();
@@ -359,7 +369,12 @@ const app = new Hono()
         .set({
           ...values,
           userId: user.id,
-          amount: convertAmountToMiliunits(values.amount),
+          price: convertPriceToMiliunits(values.price),
+          sgstPercent: values.sgstPercent?.toString(),
+          cgstPercent: values.cgstPercent?.toString(),
+          sgstAmount: values.sgstAmount?.toString(),
+          cgstAmount: values.cgstAmount?.toString(),
+          total: values.total?.toString(),
         })
         .where(
           inArray(

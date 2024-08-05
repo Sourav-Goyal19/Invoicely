@@ -18,8 +18,8 @@ const DashboardPage = async () => {
   }
   return (
     <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
-      <ClientDataGrid user={user} />
-      <DataCharts user={user} />
+      {/* <ClientDataGrid user={user} />
+      <DataCharts user={user} /> */}
     </div>
   );
 };

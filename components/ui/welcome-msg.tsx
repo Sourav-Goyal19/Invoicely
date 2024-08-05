@@ -8,7 +8,7 @@ const WelcomeMsg = async () => {
         Welcome back{user ? ", " : " "}
         {user?.name}👋🏻
       </h2>
-      <p className="text-sm lg:text-base text-[#89b6fd]">
+      <p className="text-sm lg:text-base text-[#d1bfec]">
         This is your financial report
       </p>
     </div>
