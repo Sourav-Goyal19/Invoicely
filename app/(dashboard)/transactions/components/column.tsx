@@ -58,6 +58,10 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   {
+    accessorKey: "quantity",
+    header: "Quantity",
+  },
+  {
     accessorKey: "product",
     header: ({ column }) => {
       return (
@@ -86,36 +90,8 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   {
-    accessorKey: "quantity",
-    header: "Quantity",
-  },
-  {
-    accessorKey: "sgstPercent",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          SGST %
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "cgstPercent",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          CGST %
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    accessorKey: "paymentType",
+    header: "Payment Type",
   },
   {
     accessorKey: "sgstAmount",

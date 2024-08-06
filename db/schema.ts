@@ -55,6 +55,7 @@ export const transactionsTable = pgTable("transactions", {
   price: integer("price").notNull(),
   product: text("product").notNull(),
   quantity: integer("quantity").notNull().default(1),
+  paymentType: text("payment_type").notNull().default("cash"),
   cgstPercent: decimal("cgst_percent", { precision: 5, scale: 2 })
     .notNull()
     .default("0"),

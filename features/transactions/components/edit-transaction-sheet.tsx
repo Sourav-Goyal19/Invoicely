@@ -79,17 +79,30 @@ const EditTransactionSheet = () => {
     ? {
         branchId: transactionQuery.data.branchId,
         product: transactionQuery.data.product,
-        amount: transactionQuery.data.amount.toString(),
+        price: transactionQuery.data.price,
+        quantity: transactionQuery.data.quantity,
+        total: Number(transactionQuery.data.total),
+        sgstPercent: Number(transactionQuery.data.sgstPercent),
+        cgstPercent: Number(transactionQuery.data.cgstPercent),
+        sgstAmount: Number(transactionQuery.data.sgstAmount),
+        cgstAmount: Number(transactionQuery.data.cgstAmount),
+        paymentType: transactionQuery.data.paymentType,
         date: transactionQuery.data.date
           ? new Date(transactionQuery.data.date)
           : new Date(),
       }
     : {
-        branchId: "",
-        categoryId: "",
-        product: "",
-        amount: "",
         date: new Date(),
+        branchId: "",
+        product: "",
+        price: 0,
+        quantity: 1,
+        sgstPercent: 0,
+        cgstPercent: 0,
+        sgstAmount: 0,
+        cgstAmount: 0,
+        paymentType: "cash",
+        total: 0,
       };
 
   return (

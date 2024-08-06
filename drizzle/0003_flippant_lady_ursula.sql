@@ -1,0 +1,1 @@
+ALTER TABLE "transactions" ADD COLUMN "payment_type" text DEFAULT 'cash' NOT NULL;

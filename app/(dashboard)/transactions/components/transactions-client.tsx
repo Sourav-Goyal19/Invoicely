@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2, Plus, Upload } from "lucide-react";
 import { columns, ResponseType } from "./column";
 
 import { Button } from "@/components/ui/button";
@@ -126,7 +126,15 @@ const TransactionsPageClient = () => {
               <Plus className="size-4 mr-2" />
               Add New
             </Button>
-            <UploadButton onUpload={onUpload} />
+            {/* <UploadButton onUpload={onUpload} /> */}
+            <Button size="sm">
+              <Upload className="mr-2 h-4 w-4" />
+              Export For Customer
+            </Button>
+            <Button size="sm">
+              <Upload className="mr-2 h-4 w-4" />
+              Export For Purchase
+            </Button>
           </div>
         </CardHeader>
         <CardContent>

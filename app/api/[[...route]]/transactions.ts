@@ -68,6 +68,7 @@ const app = new Hono()
           sgstAmount: transactionsTable.sgstAmount,
           cgstAmount: transactionsTable.cgstAmount,
           total: transactionsTable.total,
+          paymentType: transactionsTable.paymentType,
         })
         .from(transactionsTable)
         .innerJoin(
@@ -138,6 +139,7 @@ const app = new Hono()
           sgstAmount: transactionsTable.sgstAmount,
           cgstAmount: transactionsTable.cgstAmount,
           total: transactionsTable.total,
+          paymentType: transactionsTable.paymentType,
         })
         .from(transactionsTable)
         .innerJoin(

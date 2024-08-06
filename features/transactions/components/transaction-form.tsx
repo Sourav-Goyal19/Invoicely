@@ -1,4 +1,11 @@
 import { Select } from "@/components/select";
+import {
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Select as ShadcnSelect,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/date-picker";
@@ -28,6 +35,7 @@ const formFields = z.object({
   sgstPercent: z.coerce.number().min(0).max(100),
   cgstAmount: z.coerce.number().min(0),
   sgstAmount: z.coerce.number().min(0),
+  paymentType: z.string(),
   total: z.coerce.number().min(0),
 });
 
@@ -72,7 +80,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       cgstPercent: 0,
       sgstAmount: 0,
       cgstAmount: 0,
+      paymentType: "cash",
       total: 0,
+
       ...defaultValues,
     },
     resolver: zodResolver(formFields),
@@ -170,6 +180,30 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                   value={field.value}
                   disabled={disabled || isSubmitting}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="paymentType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="branch">Branch</FormLabel>
+              <FormControl>
+                <ShadcnSelect
+                  defaultValue={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select payment type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="bank">Bank</SelectItem>
+                  </SelectContent>
+                </ShadcnSelect>
               </FormControl>
               <FormMessage />
             </FormItem>
