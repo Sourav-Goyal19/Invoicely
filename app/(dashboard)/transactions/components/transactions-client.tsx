@@ -127,21 +127,13 @@ const TransactionsPageClient = () => {
               Add New
             </Button>
             {/* <UploadButton onUpload={onUpload} /> */}
-            <Button size="sm">
-              <Upload className="mr-2 h-4 w-4" />
-              Export For Customer
-            </Button>
-            <Button size="sm">
-              <Upload className="mr-2 h-4 w-4" />
-              Export For Purchase
-            </Button>
           </div>
         </CardHeader>
         <CardContent>
           <DataTable
             columns={columns}
             data={data}
-            filterKey="payee"
+            filterKey="product"
             onDelete={(rows) => {
               const ids = rows.map((r) => r.original.id);
               const deleted = deletetransactions.mutate({

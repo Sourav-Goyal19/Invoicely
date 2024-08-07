@@ -25,7 +25,7 @@ import React from "react";
 import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash } from "lucide-react";
+import { Trash, Upload } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -81,22 +81,31 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
         {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <Button
-            disabled={disabled}
-            variant="outline"
-            onClick={async () => {
-              const ok = await confirm();
-              if (ok) {
-                onDelete(table.getFilteredSelectedRowModel().rows);
-                table.resetRowSelection();
-              }
-            }}
-            size={"sm"}
-            className="ml-auto font-normal text-sm"
-          >
-            <Trash className="size-4 mr-2" />
-            Delete ({table.getSelectedRowModel().rows.length})
-          </Button>
+          <div className="flex ml-auto font-normal text-sm gap-3">
+            <Button
+              disabled={disabled}
+              variant="outline"
+              onClick={async () => {
+                const ok = await confirm();
+                if (ok) {
+                  onDelete(table.getFilteredSelectedRowModel().rows);
+                  table.resetRowSelection();
+                }
+              }}
+              size="sm"
+            >
+              <Trash className="size-4 mr-2" />
+              Delete ({table.getSelectedRowModel().rows.length})
+            </Button>
+            <Button size="sm" variant="outline">
+              <Upload className="mr-2 h-4 w-4" />
+              Export For Customer
+            </Button>
+            <Button size="sm" variant="outline">
+              <Upload className="mr-2 h-4 w-4" />
+              Export For Purchase
+            </Button>
+          </div>
         )}
       </div>
       <div className="rounded-md border">
