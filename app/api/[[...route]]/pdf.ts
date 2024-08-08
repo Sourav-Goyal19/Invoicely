@@ -228,7 +228,22 @@ const generatePDFforPurchase = (
     doc.setLineWidth(0.3);
     doc.line(10, 93, 200, 93);
 
-    const pageTransactions = transactions.map((transaction, index) => [
+    const pageTotal = transactions.reduce((acc, curr) => acc + curr.total, 0);
+
+    const amountBeforeTax = calculateAmountBeforeGST(pageTotal, GSTPercent);
+
+    const discountFactor = amountBeforeTax / pageTotal;
+
+    const SGST = amountBeforeTax * (GSTPercent / 2 / 100);
+    const CGST = amountBeforeTax * (GSTPercent / 2 / 100);
+
+    const formattedTransactions = transactions.map((transaction) => ({
+      ...transaction,
+      price: transaction.price * discountFactor,
+      total: transaction.total * discountFactor,
+    }));
+
+    const pageTransactions = formattedTransactions.map((transaction, index) => [
       index + 1,
       transaction.product || "N/A",
       `Rs ${transaction.price.toFixed(2)}`,
@@ -241,12 +256,6 @@ const generatePDFforPurchase = (
         pageTransactions.push([i + 1, "", "_", "_", "_"]);
       }
     }
-
-    const pageTotal = transactions.reduce((acc, curr) => acc + curr.total, 0);
-
-    const amountBeforeTax = calculateAmountBeforeGST(pageTotal, GSTPercent);
-    const SGST = amountBeforeTax * (GSTPercent / 2 / 100);
-    const CGST = amountBeforeTax * (GSTPercent / 2 / 100);
 
     pageTransactions.push(
       [
@@ -397,7 +406,22 @@ const generatePDFforCustomer = (
     doc.setLineWidth(0.3);
     doc.line(10, 93, 200, 93);
 
-    const pageTransactions = transactions.map((transaction, index) => [
+    const pageTotal = transactions.reduce((acc, curr) => acc + curr.total, 0);
+
+    const amountBeforeTax = calculateAmountBeforeGST(pageTotal, GSTPercent);
+
+    const discountFactor = amountBeforeTax / pageTotal;
+
+    const SGST = amountBeforeTax * (GSTPercent / 2 / 100);
+    const CGST = amountBeforeTax * (GSTPercent / 2 / 100);
+
+    const formattedTransactions = transactions.map((transaction) => ({
+      ...transaction,
+      price: transaction.price * discountFactor,
+      total: transaction.total * discountFactor,
+    }));
+
+    const pageTransactions = formattedTransactions.map((transaction, index) => [
       index + 1,
       transaction.product || "N/A",
       `Rs ${transaction.price.toFixed(2)}`,
@@ -410,12 +434,6 @@ const generatePDFforCustomer = (
         pageTransactions.push([i + 1, "", "_", "_", "_"]);
       }
     }
-
-    const pageTotal = transactions.reduce((acc, curr) => acc + curr.total, 0);
-
-    const amountBeforeTax = calculateAmountBeforeGST(pageTotal, GSTPercent);
-    const SGST = amountBeforeTax * (GSTPercent / 2 / 100);
-    const CGST = amountBeforeTax * (GSTPercent / 2 / 100);
 
     pageTransactions.push(
       [
