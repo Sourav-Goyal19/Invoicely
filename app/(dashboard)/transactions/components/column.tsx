@@ -90,46 +90,6 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   {
-    accessorKey: "paymentType",
-    header: "Payment Type",
-  },
-  {
-    accessorKey: "sgstAmount",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          SGST
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const sgstAmount = row.getValue("sgstAmount") as number;
-      return <span>{formatCurrency(sgstAmount)}</span>;
-    },
-  },
-  {
-    accessorKey: "cgstAmount",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          CGST
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const cgstAmount = row.getValue("cgstAmount") as number;
-      return <span>{formatCurrency(cgstAmount)}</span>;
-    },
-  },
-  {
     accessorKey: "total",
     header: ({ column }) => {
       return (
@@ -145,28 +105,6 @@ export const columns: ColumnDef<ResponseType>[] = [
     cell: ({ row }) => {
       const total = row.getValue("total") as number;
       return <span>{formatCurrency(total)}</span>;
-    },
-  },
-  {
-    accessorKey: "branch",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Branch
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <BranchColumn
-          branch={row.original.branch}
-          branchId={row.original.branchId}
-        />
-      );
     },
   },
   {

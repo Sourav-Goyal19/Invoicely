@@ -9,7 +9,7 @@ interface FiltersProps {
 const Filters: React.FC<FiltersProps> = ({ user }) => {
   return (
     <div className="flex flex-col lg:flex-row gap-2 items-center">
-      <BranchFilter user={user} />
+      {/* <BranchFilter user={user} /> */}
       <DateFilter user={user} />
     </div>
   );

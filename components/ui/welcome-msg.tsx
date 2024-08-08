@@ -4,7 +4,7 @@ const WelcomeMsg = async () => {
   const user = await getCurrentUser();
   return (
     <div className="space-y-2 mb-4">
-      <h2 className="text-2xl lg:text-4xl selection:bg-white text-white font-medium">
+      <h2 className="text-2xl lg:text-4xl text-white font-medium">
         Welcome back{user ? ", " : " "}
         {user?.name}👋🏻
       </h2>

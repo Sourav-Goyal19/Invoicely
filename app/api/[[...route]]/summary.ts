@@ -1,10 +1,6 @@
 import { db } from "@/db/drizzle";
 import { branchesTable, transactionsTable, usersTable } from "@/db/schema";
-import {
-  calculatePercentageChange,
-  convertPriceFromMiliunits,
-  fillMissingDays,
-} from "@/lib/utils";
+import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
 import { zValidator } from "@hono/zod-validator";
 import { differenceInDays, parse, subDays } from "date-fns";
 import { and, desc, eq, gte, lt, lte, sql, sum } from "drizzle-orm";
@@ -70,13 +66,8 @@ const app = new Hono().get(
           remaining: sum(transactionsTable.price).mapWith(Number),
         })
         .from(transactionsTable)
-        .innerJoin(
-          branchesTable,
-          eq(branchesTable.id, transactionsTable.branchId)
-        )
         .where(
           and(
-            branchId ? eq(transactionsTable.branchId, branchId) : undefined,
             eq(transactionsTable.userId, userId),
             gte(transactionsTable.date, startDate),
             lte(transactionsTable.date, endDate)
@@ -97,15 +88,15 @@ const app = new Hono().get(
     );
 
     const formattedCurrentPeriod = {
-      income: convertPriceFromMiliunits(currentPeriod.income),
-      expenses: convertPriceFromMiliunits(currentPeriod.expenses),
-      remaining: convertPriceFromMiliunits(currentPeriod.remaining),
+      income: currentPeriod.income,
+      expenses: currentPeriod.expenses,
+      remaining: currentPeriod.remaining,
     };
 
     const formattedLastPeriod = {
-      income: convertPriceFromMiliunits(lastPeriod.income),
-      expenses: convertPriceFromMiliunits(lastPeriod.expenses),
-      remaining: convertPriceFromMiliunits(lastPeriod.remaining),
+      income: lastPeriod.income,
+      expenses: lastPeriod.expenses,
+      remaining: lastPeriod.remaining,
     };
 
     const incomeChange = calculatePercentageChange(
@@ -136,13 +127,8 @@ const app = new Hono().get(
           ),
       })
       .from(transactionsTable)
-      .innerJoin(
-        branchesTable,
-        eq(branchesTable.id, transactionsTable.branchId)
-      )
       .where(
         and(
-          branchId ? eq(transactionsTable.branchId, branchId) : undefined,
           eq(transactionsTable.userId, user.id),
           gte(transactionsTable.date, startDate),
           lte(transactionsTable.date, endDate)
@@ -153,8 +139,8 @@ const app = new Hono().get(
 
     const formattedActiveDays = activeDays.map((item) => ({
       date: item.date,
-      income: convertPriceFromMiliunits(item.income),
-      expenses: convertPriceFromMiliunits(item.expenses),
+      income: item.income,
+      expenses: item.expenses,
     }));
 
     const days = fillMissingDays(formattedActiveDays, startDate, endDate);

@@ -15,7 +15,6 @@ import { useBulkDeleteTransactions } from "@/features/transactions/api/use-bulk-
 import { useNewTransaction } from "@/features/transactions/hooks/use-new-transaction";
 import { useGetTransactions } from "@/features/transactions/api/use-get-transactions";
 import { useState } from "react";
-import { UploadButton } from "./upload-button";
 import { useSelectBranch } from "@/hooks/use-select-branch";
 import ImportCard from "./import-card";
 import { toast } from "sonner";
@@ -31,7 +30,6 @@ const INITIAL_IMPORT_RESULTS = {
 };
 
 const CsvFormFields = insertTransactionsSchema.omit({
-  branchId: true,
   userId: true,
   id: true,
 });

@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { db } from "@/db/drizzle";
 import { and, desc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
-import { validate as validateUUId } from "uuid";
 import { parse, subDays } from "date-fns";
 import {
   transactionsTable,
@@ -11,10 +10,6 @@ import {
   usersTable,
   branchesTable,
 } from "@/db/schema";
-import {
-  convertPriceFromMiliunits,
-  convertPriceToMiliunits,
-} from "@/lib/utils";
 
 const app = new Hono()
   .get(
@@ -57,27 +52,15 @@ const app = new Hono()
       const data = await db
         .select({
           id: transactionsTable.id,
-          branchId: transactionsTable.branchId,
-          branch: branchesTable.name,
           date: transactionsTable.date,
           product: transactionsTable.product,
           price: transactionsTable.price,
           quantity: transactionsTable.quantity,
-          sgstPercent: transactionsTable.sgstPercent,
-          cgstPercent: transactionsTable.cgstPercent,
-          sgstAmount: transactionsTable.sgstAmount,
-          cgstAmount: transactionsTable.cgstAmount,
           total: transactionsTable.total,
-          paymentType: transactionsTable.paymentType,
         })
         .from(transactionsTable)
-        .innerJoin(
-          branchesTable,
-          eq(transactionsTable.branchId, branchesTable.id)
-        )
         .where(
           and(
-            branchId ? eq(transactionsTable.branchId, branchId) : undefined,
             eq(transactionsTable.userId, user.id),
             gte(transactionsTable.date, startDate),
             lte(transactionsTable.date, endDate)
@@ -88,7 +71,6 @@ const app = new Hono()
       const formattedData = data.map((item) => {
         return {
           ...item,
-          price: convertPriceFromMiliunits(item.price),
         };
       });
 
@@ -128,24 +110,14 @@ const app = new Hono()
       const [data] = await db
         .select({
           id: transactionsTable.id,
-          branchId: transactionsTable.branchId,
           branch: branchesTable.name,
           date: transactionsTable.date,
           product: transactionsTable.product,
           price: transactionsTable.price,
           quantity: transactionsTable.quantity,
-          sgstPercent: transactionsTable.sgstPercent,
-          cgstPercent: transactionsTable.cgstPercent,
-          sgstAmount: transactionsTable.sgstAmount,
-          cgstAmount: transactionsTable.cgstAmount,
           total: transactionsTable.total,
-          paymentType: transactionsTable.paymentType,
         })
         .from(transactionsTable)
-        .innerJoin(
-          branchesTable,
-          eq(branchesTable.id, transactionsTable.branchId)
-        )
         .where(
           and(
             eq(transactionsTable.userId, user.id),
@@ -157,12 +129,7 @@ const app = new Hono()
         return c.json({ error: "Transaction Not Found" }, 404);
       }
 
-      const formattedData = {
-        ...data,
-        price: convertPriceFromMiliunits(data.price),
-      };
-
-      return c.json({ data: formattedData }, 200);
+      return c.json({ data }, 200);
     }
   )
   .post(
@@ -193,20 +160,14 @@ const app = new Hono()
         return c.json({ error: "User Not Found" }, 400);
       }
 
-      if (!validateUUId(values.branchId)) {
-        return c.json({ error: "Invalid Branch Id" }, 400);
-      }
-
       const [data] = await db
         .insert(transactionsTable)
         .values({
           ...values,
           userId: user.id,
-          price: convertPriceToMiliunits(values.price),
-          sgstPercent: values.sgstPercent?.toString(),
-          cgstPercent: values.cgstPercent?.toString(),
-          sgstAmount: values.sgstAmount?.toString(),
-          cgstAmount: values.cgstAmount?.toString(),
+          price: values.price,
+          quantity: values.quantity,
+          product: values.product,
           total: values.total?.toString(),
         })
         .returning();
@@ -250,11 +211,9 @@ const app = new Hono()
           values.map((v) => ({
             ...v,
             userId: user.id,
-            price: convertPriceToMiliunits(v.price),
-            sgstPercent: v.sgstPercent?.toString(),
-            cgstPercent: v.cgstPercent?.toString(),
-            sgstAmount: v.sgstAmount?.toString(),
-            cgstAmount: v.cgstAmount?.toString(),
+            price: v.price,
+            quantity: v.quantity,
+            product: v.product,
             total: v.total?.toString(),
           }))
         )
@@ -295,10 +254,6 @@ const app = new Hono()
             id: transactionsTable.id,
           })
           .from(transactionsTable)
-          .innerJoin(
-            branchesTable,
-            eq(branchesTable.id, transactionsTable.branchId)
-          )
           .where(
             and(
               eq(transactionsTable.userId, user.id),
@@ -365,10 +320,6 @@ const app = new Hono()
             id: transactionsTable.id,
           })
           .from(transactionsTable)
-          .innerJoin(
-            branchesTable,
-            eq(branchesTable.id, transactionsTable.branchId)
-          )
           .where(
             and(
               eq(transactionsTable.id, id),
@@ -383,11 +334,9 @@ const app = new Hono()
         .set({
           ...values,
           userId: user.id,
-          price: convertPriceToMiliunits(values.price),
-          sgstPercent: values.sgstPercent?.toString(),
-          cgstPercent: values.cgstPercent?.toString(),
-          sgstAmount: values.sgstAmount?.toString(),
-          cgstAmount: values.cgstAmount?.toString(),
+          price: values.price,
+          quantity: values.quantity,
+          product: values.product,
           total: values.total?.toString(),
         })
         .where(
@@ -441,10 +390,6 @@ const app = new Hono()
             id: transactionsTable.id,
           })
           .from(transactionsTable)
-          .innerJoin(
-            branchesTable,
-            eq(branchesTable.id, transactionsTable.branchId)
-          )
           .where(
             and(
               eq(transactionsTable.id, id),
