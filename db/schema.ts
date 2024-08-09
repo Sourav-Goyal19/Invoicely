@@ -40,8 +40,7 @@ export const branchesTable = pgTable("branches", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const branchRelations = relations(branchesTable, ({ many, one }) => ({
-  transactions: many(transactionsTable),
+export const branchRelations = relations(branchesTable, ({ one }) => ({
   user: one(usersTable, {
     fields: [branchesTable.userId],
     references: [usersTable.id],
@@ -50,6 +49,31 @@ export const branchRelations = relations(branchesTable, ({ many, one }) => ({
 
 export const insertBranchSchema = createInsertSchema(branchesTable);
 
+export const categoriesTable = pgTable("categories", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  userId: uuid("user_id")
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const categoryRelations = relations(
+  categoriesTable,
+  ({ many, one }) => ({
+    transactions: many(transactionsTable),
+    user: one(usersTable, {
+      fields: [categoriesTable.userId],
+      references: [usersTable.id],
+    }),
+  })
+);
+
+export const insertCategorySchema = createInsertSchema(categoriesTable);
+
 export const transactionsTable = pgTable("transactions", {
   id: uuid("id").defaultRandom().primaryKey(),
   price: integer("price").notNull(),
@@ -57,6 +81,7 @@ export const transactionsTable = pgTable("transactions", {
   quantity: integer("quantity").notNull(),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   date: timestamp("date", { mode: "date" }).notNull(),
+  categoryId: uuid("category_id").references(() => categoriesTable.id),
   userId: uuid("user_id")
     .references(() => usersTable.id, {
       onDelete: "cascade",
@@ -70,6 +95,10 @@ export const transactionsRelations = relations(
     user: one(usersTable, {
       fields: [transactionsTable.userId],
       references: [usersTable.id],
+    }),
+    category: one(categoriesTable, {
+      fields: [transactionsTable.categoryId],
+      references: [categoriesTable.id],
     }),
   })
 );

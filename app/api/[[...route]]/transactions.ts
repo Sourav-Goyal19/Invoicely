@@ -8,7 +8,7 @@ import {
   transactionsTable,
   insertTransactionsSchema,
   usersTable,
-  branchesTable,
+  categoriesTable,
 } from "@/db/schema";
 
 const app = new Hono()
@@ -25,11 +25,11 @@ const app = new Hono()
       z.object({
         from: z.string().optional(),
         to: z.string().optional(),
-        branchId: z.string().optional(),
+        categoryId: z.string().optional(),
       })
     ),
     async (ctx) => {
-      const { from, to, branchId } = ctx.req.valid("query");
+      const { from, to, categoryId } = ctx.req.valid("query");
       const email = ctx.req.valid("param").email;
       if (!email) {
         return ctx.json({ error: "Email Id is required" }, 400);
@@ -52,6 +52,8 @@ const app = new Hono()
       const data = await db
         .select({
           id: transactionsTable.id,
+          category: categoriesTable.name,
+          categoryId: transactionsTable.categoryId,
           date: transactionsTable.date,
           product: transactionsTable.product,
           price: transactionsTable.price,
@@ -59,8 +61,15 @@ const app = new Hono()
           total: transactionsTable.total,
         })
         .from(transactionsTable)
+        .leftJoin(
+          categoriesTable,
+          eq(transactionsTable.categoryId, categoriesTable.id)
+        )
         .where(
           and(
+            categoryId
+              ? eq(transactionsTable.categoryId, categoryId)
+              : undefined,
             eq(transactionsTable.userId, user.id),
             gte(transactionsTable.date, startDate),
             lte(transactionsTable.date, endDate)
@@ -110,7 +119,8 @@ const app = new Hono()
       const [data] = await db
         .select({
           id: transactionsTable.id,
-          branch: branchesTable.name,
+          category: categoriesTable.name,
+          categoryId: transactionsTable.categoryId,
           date: transactionsTable.date,
           product: transactionsTable.product,
           price: transactionsTable.price,
@@ -118,6 +128,10 @@ const app = new Hono()
           total: transactionsTable.total,
         })
         .from(transactionsTable)
+        .leftJoin(
+          categoriesTable,
+          eq(transactionsTable.categoryId, categoriesTable.id)
+        )
         .where(
           and(
             eq(transactionsTable.userId, user.id),

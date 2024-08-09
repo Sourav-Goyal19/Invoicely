@@ -17,6 +17,8 @@ import { useCreateTransaction } from "../api/use-create-transaction";
 
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useCreateBranch } from "@/features/branches/api/use-create-branch";
+import { useGetCategories } from "@/features/categories/api/use-get-categories";
+import { useCreateCategory } from "@/features/categories/api/use-create-category";
 
 const apiFormFields = insertTransactionsSchema.omit({ id: true, userId: true });
 
@@ -35,6 +37,17 @@ const NewTransactionSheet = () => {
   const branchOptions = (branchQuery.data || []).map((branch) => ({
     label: branch.name,
     value: branch.id,
+  }));
+
+  const categoryQuery = useGetCategories(data?.user?.email!);
+  const categoryMutation = useCreateCategory(data?.user?.email!);
+  const onCreateCategory = (name: string) =>
+    categoryMutation.mutate({
+      name,
+    });
+  const categoryOptions = (categoryQuery.data || []).map((category) => ({
+    label: category.name,
+    value: category.id,
   }));
 
   const transactionMutation = useCreateTransaction(data?.user?.email!);
@@ -71,6 +84,8 @@ const NewTransactionSheet = () => {
             disabled={isPending}
             branchOptions={branchOptions}
             onCreateBranch={onCreateBranch}
+            categoryOptions={categoryOptions}
+            onCreateCategory={onCreateCategory}
           />
         )}
       </SheetContent>

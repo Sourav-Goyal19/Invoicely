@@ -6,6 +6,7 @@ import BranchRouter from "./branches";
 import TransactionsRouter from "./transactions";
 import SummaryRouter from "./summary";
 import PdfRouter from "./pdf";
+import CategoryRouter from "./categories";
 
 export const runtime = "edge";
 
@@ -21,6 +22,7 @@ app.onError((err, ctx) => {
 const routes = app
   .route("/:email/summary", SummaryRouter)
   .route("/:email/branches", BranchRouter)
+  .route("/:email/categories", CategoryRouter)
   .route("/:email/transactions", TransactionsRouter)
   .route("/:email/pdf", PdfRouter);
 

@@ -17,6 +17,8 @@ import { useDeleteTransaction } from "@/features/transactions/api/use-delete-tra
 import { useConfirm } from "@/hooks/use-confirm";
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useCreateBranch } from "@/features/branches/api/use-create-branch";
+import { useGetCategories } from "@/features/categories/api/use-get-categories";
+import { useCreateCategory } from "@/features/categories/api/use-create-category";
 
 const apiSchema = insertTransactionsSchema.omit({
   id: true,
@@ -47,6 +49,17 @@ const EditTransactionSheet = () => {
     value: branch.id,
   }));
 
+  const categoryQuery = useGetCategories(data?.user?.email!);
+  const categoryMutation = useCreateCategory(data?.user?.email!);
+  const onCreateCategory = (name: string) =>
+    categoryMutation.mutate({
+      name,
+    });
+  const categoryOptions = (categoryQuery.data || []).map((category) => ({
+    label: category.name,
+    value: category.id,
+  }));
+
   // console.log(transactionQuery.data);
 
   const onSubmit = (data: ApiFormValues) => {
@@ -60,9 +73,13 @@ const EditTransactionSheet = () => {
   const isPending =
     transactionMutation.isPending ||
     deleteMutation.isPending ||
-    branchMutation.isPending;
+    branchMutation.isPending ||
+    categoryMutation.isPending;
 
-  const isLoading = branchQuery.isLoading || transactionQuery.isLoading;
+  const isLoading =
+    branchQuery.isLoading ||
+    transactionQuery.isLoading ||
+    categoryQuery.isLoading;
 
   const onDelete = async () => {
     const ok = await confirm();
@@ -77,6 +94,7 @@ const EditTransactionSheet = () => {
 
   const defaultValues = transactionQuery.data
     ? {
+        categoryId: transactionQuery.data.categoryId,
         product: transactionQuery.data.product,
         price: transactionQuery.data.price,
         quantity: transactionQuery.data.quantity,
@@ -87,6 +105,7 @@ const EditTransactionSheet = () => {
       }
     : {
         date: new Date(),
+        categoryId: "",
         product: "",
         price: 0,
         quantity: 1,
@@ -118,6 +137,8 @@ const EditTransactionSheet = () => {
             onDelete={onDelete}
             branchOptions={branchOptions}
             onCreateBranch={onCreateBranch}
+            categoryOptions={categoryOptions}
+            onCreateCategory={onCreateCategory}
           />
         )}
       </SheetContent>

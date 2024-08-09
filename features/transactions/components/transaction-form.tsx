@@ -15,10 +15,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
+import { Select } from "@/components/select";
 
 const formFields = z.object({
   date: z.coerce.date(),
   product: z.string().min(1, "Product Name is required").trim(),
+  categoryId: z.string().nullable().optional(),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
   price: z.coerce.number().min(1, "Price must be non-zero and non-negative"),
   total: z.coerce.number().min(0),
@@ -38,8 +40,10 @@ interface TransactionFormProps {
   onSubmit: (values: ApiFormValues) => void;
   onDelete?: () => void;
   disabled?: boolean;
-  branchOptions: { label: string; value: string }[];
   onCreateBranch: (name: string) => void;
+  branchOptions: { label: string; value: string }[];
+  onCreateCategory: (name: string) => void;
+  categoryOptions: { label: string; value: string }[];
 }
 
 export const TransactionForm: React.FC<TransactionFormProps> = ({
@@ -48,6 +52,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   onSubmit,
   onDelete,
   disabled,
+  onCreateCategory,
+  categoryOptions,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -108,6 +114,26 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                   onChange={field.onChange}
                   value={field.value}
                   disabled={disabled || isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="categoryId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                <Select
+                  placeholder="Select a category"
+                  options={categoryOptions}
+                  onChange={field.onChange}
+                  onCreate={onCreateCategory}
+                  value={field.value}
+                  disabled={disabled}
                 />
               </FormControl>
               <FormMessage />

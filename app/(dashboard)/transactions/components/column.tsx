@@ -8,8 +8,8 @@ import { ArrowUpDown } from "lucide-react";
 import { client } from "@/lib/hono";
 import Actions from "./actions";
 import { format } from "date-fns";
-import BranchColumn from "./branch-column";
 import { formatCurrency } from "@/lib/utils";
+import CategoryColumn from "./category-column";
 
 export type ResponseType = InferResponseType<
   (typeof client.api)[":email"]["transactions"]["$get"],
@@ -55,6 +55,29 @@ export const columns: ColumnDef<ResponseType>[] = [
     cell: ({ row }) => {
       const date = row.getValue("date") as Date;
       return <span>{format(date, "dd MMMM, yyyy")}</span>;
+    },
+  },
+  {
+    accessorKey: "category",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Category
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <CategoryColumn
+          id={row.original.id}
+          category={row.original.category}
+          categoryId={row.original.categoryId}
+        />
+      );
     },
   },
   {
