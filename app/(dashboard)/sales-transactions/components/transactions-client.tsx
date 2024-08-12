@@ -128,7 +128,7 @@ const TransactionsPageClient = () => {
         <Card className="border-none drop-shadow-sm">
           <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
             <CardTitle className="text-xl line-clamp-1">
-              Transactions History
+              Sales Transactions History
             </CardTitle>
             <div className="flex flex-col lg:flex-row lg:items-center gap-3">
               <Button onClick={onOpen} size={"sm"}>
