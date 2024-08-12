@@ -4,18 +4,20 @@ import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
-  (typeof client.api)[":email"]["transactions"][":id"]["$patch"]
+  (typeof client.api)[":email"]["purchase-transactions"][":id"]["$patch"]
 >;
 type RequestType = InferRequestType<
-  (typeof client.api)[":email"]["transactions"][":id"]["$patch"]
+  (typeof client.api)[":email"]["purchase-transactions"][":id"]["$patch"]
 >["json"];
 
-export const useEditTransaction = (id: string, email: string) => {
+export const useEditPurchaseTransaction = (id: string, email: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
-      const response = await client.api[":email"].transactions[":id"].$patch({
+      const response = await client.api[":email"]["purchase-transactions"][
+        ":id"
+      ].$patch({
         param: {
           id,
           email,
@@ -33,8 +35,10 @@ export const useEditTransaction = (id: string, email: string) => {
     },
     onSuccess: () => {
       toast.success("Transaction updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["transaction", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["purchase-transactions"] });
+      queryClient.invalidateQueries({
+        queryKey: ["purchase-transaction", { id }],
+      });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: (error) => {

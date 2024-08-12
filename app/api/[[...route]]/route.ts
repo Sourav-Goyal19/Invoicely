@@ -3,7 +3,7 @@ import { handle } from "hono/vercel";
 import { HTTPException } from "hono/http-exception";
 
 import BranchRouter from "./branches";
-import TransactionsRouter from "./transactions";
+import PurchaseTransactionsRouter from "./purchase-transactions";
 import SummaryRouter from "./summary";
 import PdfRouter from "./pdf";
 import CategoryRouter from "./categories";
@@ -23,7 +23,7 @@ const routes = app
   .route("/:email/summary", SummaryRouter)
   .route("/:email/branches", BranchRouter)
   .route("/:email/categories", CategoryRouter)
-  .route("/:email/transactions", TransactionsRouter)
+  .route("/:email/purchase-transactions", PurchaseTransactionsRouter)
   .route("/:email/pdf", PdfRouter);
 
 export const GET = handle(app);

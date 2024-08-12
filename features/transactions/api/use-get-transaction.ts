@@ -2,12 +2,14 @@
 import { client } from "@/lib/hono";
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetTransaction = (id: string, email: string) => {
+export const useGetPurchaseTransaction = (id: string, email: string) => {
   const query = useQuery({
     enabled: !!id,
-    queryKey: ["transaction", { id }],
+    queryKey: ["purchase-transaction", { id }],
     queryFn: async () => {
-      const res = await client.api[":email"].transactions[":id"].$get({
+      const res = await client.api[":email"]["purchase-transactions"][
+        ":id"
+      ].$get({
         param: {
           email,
           id,

@@ -30,7 +30,7 @@ import { useSelectCustomer } from "@/hooks/use-select-customer";
 import { toast } from "sonner";
 import { useCreateCustomerPdf } from "@/features/transactions/api/use-create-customer-pdf";
 import { useSession } from "next-auth/react";
-import { insertTransactionsSchema } from "@/db/schema";
+import { insertPurchaseTransactionsSchema } from "@/db/schema";
 import { z } from "zod";
 import LoadingModal from "./ui/loading-modal";
 import { useCreatePurchasePdf } from "@/features/transactions/api/use-create-purchase-pdf";
@@ -44,7 +44,7 @@ interface DataTableProps<TData, TValue> {
   disabled?: boolean;
 }
 
-const transactionSchema = insertTransactionsSchema.omit({
+const transactionSchema = insertPurchaseTransactionsSchema.omit({
   userId: true,
   id: true,
 });

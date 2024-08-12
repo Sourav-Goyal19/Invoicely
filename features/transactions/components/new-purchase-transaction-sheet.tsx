@@ -8,23 +8,26 @@ import {
 
 import { z } from "zod";
 import { useSession } from "next-auth/react";
-import { insertTransactionsSchema } from "@/db/schema";
+import { insertPurchaseTransactionsSchema } from "@/db/schema";
 import { Loader2 } from "lucide-react";
 
-import { TransactionForm } from "./transaction-form";
+import { PurchaseTransactionForm } from "./purchase-transaction-form";
 import { useNewTransaction } from "../hooks/use-new-transaction";
-import { useCreateTransaction } from "../api/use-create-transaction";
+import { useCreatePurchaseTransaction } from "../api/use-create-transaction";
 
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useCreateBranch } from "@/features/branches/api/use-create-branch";
 import { useGetCategories } from "@/features/categories/api/use-get-categories";
 import { useCreateCategory } from "@/features/categories/api/use-create-category";
 
-const apiFormFields = insertTransactionsSchema.omit({ id: true, userId: true });
+const apiFormFields = insertPurchaseTransactionsSchema.omit({
+  id: true,
+  userId: true,
+});
 
 type ApiFormValues = z.input<typeof apiFormFields>;
 
-const NewTransactionSheet = () => {
+const NewPurchaseTransactionSheet = () => {
   const { isOpen, onClose } = useNewTransaction();
   const { data } = useSession();
 
@@ -50,7 +53,7 @@ const NewTransactionSheet = () => {
     value: category.id,
   }));
 
-  const transactionMutation = useCreateTransaction(data?.user?.email!);
+  const transactionMutation = useCreatePurchaseTransaction(data?.user?.email!);
 
   const isPending = branchMutation.isPending || transactionMutation.isPending;
 
@@ -79,7 +82,7 @@ const NewTransactionSheet = () => {
             <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
           </div>
         ) : (
-          <TransactionForm
+          <PurchaseTransactionForm
             onSubmit={onSubmit}
             disabled={isPending}
             branchOptions={branchOptions}
@@ -93,4 +96,4 @@ const NewTransactionSheet = () => {
   );
 };
 
-export default NewTransactionSheet;
+export default NewPurchaseTransactionSheet;

@@ -5,8 +5,8 @@ import { and, desc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { parse, subDays } from "date-fns";
 import {
-  transactionsTable,
-  insertTransactionsSchema,
+  purchaseTransactionsTable,
+  insertPurchaseTransactionsSchema,
   usersTable,
   categoriesTable,
 } from "@/db/schema";
@@ -51,31 +51,31 @@ const app = new Hono()
 
       const data = await db
         .select({
-          id: transactionsTable.id,
+          id: purchaseTransactionsTable.id,
           category: categoriesTable.name,
-          categoryId: transactionsTable.categoryId,
-          date: transactionsTable.date,
-          product: transactionsTable.product,
-          price: transactionsTable.price,
-          quantity: transactionsTable.quantity,
-          total: transactionsTable.total,
+          categoryId: purchaseTransactionsTable.categoryId,
+          date: purchaseTransactionsTable.date,
+          product: purchaseTransactionsTable.product,
+          price: purchaseTransactionsTable.price,
+          quantity: purchaseTransactionsTable.quantity,
+          total: purchaseTransactionsTable.total,
         })
-        .from(transactionsTable)
+        .from(purchaseTransactionsTable)
         .leftJoin(
           categoriesTable,
-          eq(transactionsTable.categoryId, categoriesTable.id)
+          eq(purchaseTransactionsTable.categoryId, categoriesTable.id)
         )
         .where(
           and(
             categoryId
-              ? eq(transactionsTable.categoryId, categoryId)
+              ? eq(purchaseTransactionsTable.categoryId, categoryId)
               : undefined,
-            eq(transactionsTable.userId, user.id),
-            gte(transactionsTable.date, startDate),
-            lte(transactionsTable.date, endDate)
+            eq(purchaseTransactionsTable.userId, user.id),
+            gte(purchaseTransactionsTable.date, startDate),
+            lte(purchaseTransactionsTable.date, endDate)
           )
         )
-        .orderBy(desc(transactionsTable.date));
+        .orderBy(desc(purchaseTransactionsTable.date));
 
       const formattedData = data.map((item) => {
         return {
@@ -118,24 +118,24 @@ const app = new Hono()
 
       const [data] = await db
         .select({
-          id: transactionsTable.id,
+          id: purchaseTransactionsTable.id,
           category: categoriesTable.name,
-          categoryId: transactionsTable.categoryId,
-          date: transactionsTable.date,
-          product: transactionsTable.product,
-          price: transactionsTable.price,
-          quantity: transactionsTable.quantity,
-          total: transactionsTable.total,
+          categoryId: purchaseTransactionsTable.categoryId,
+          date: purchaseTransactionsTable.date,
+          product: purchaseTransactionsTable.product,
+          price: purchaseTransactionsTable.price,
+          quantity: purchaseTransactionsTable.quantity,
+          total: purchaseTransactionsTable.total,
         })
-        .from(transactionsTable)
+        .from(purchaseTransactionsTable)
         .leftJoin(
           categoriesTable,
-          eq(transactionsTable.categoryId, categoriesTable.id)
+          eq(purchaseTransactionsTable.categoryId, categoriesTable.id)
         )
         .where(
           and(
-            eq(transactionsTable.userId, user.id),
-            eq(transactionsTable.id, id)
+            eq(purchaseTransactionsTable.userId, user.id),
+            eq(purchaseTransactionsTable.id, id)
           )
         );
 
@@ -156,7 +156,7 @@ const app = new Hono()
     ),
     zValidator(
       "json",
-      insertTransactionsSchema.omit({
+      insertPurchaseTransactionsSchema.omit({
         id: true,
         userId: true,
       })
@@ -175,7 +175,7 @@ const app = new Hono()
       }
 
       const [data] = await db
-        .insert(transactionsTable)
+        .insert(purchaseTransactionsTable)
         .values({
           ...values,
           userId: user.id,
@@ -194,7 +194,7 @@ const app = new Hono()
     zValidator(
       "json",
       z.array(
-        insertTransactionsSchema.omit({
+        insertPurchaseTransactionsSchema.omit({
           id: true,
           userId: true,
         })
@@ -220,7 +220,7 @@ const app = new Hono()
       }
 
       const data = await db
-        .insert(transactionsTable)
+        .insert(purchaseTransactionsTable)
         .values(
           values.map((v) => ({
             ...v,
@@ -265,23 +265,23 @@ const app = new Hono()
       const transactionsToDelete = db.$with("transactions_to_delete").as(
         db
           .select({
-            id: transactionsTable.id,
+            id: purchaseTransactionsTable.id,
           })
-          .from(transactionsTable)
+          .from(purchaseTransactionsTable)
           .where(
             and(
-              eq(transactionsTable.userId, user.id),
-              inArray(transactionsTable.id, values.ids)
+              eq(purchaseTransactionsTable.userId, user.id),
+              inArray(purchaseTransactionsTable.id, values.ids)
             )
           )
       );
 
       const data = await db
         .with(transactionsToDelete)
-        .delete(transactionsTable)
+        .delete(purchaseTransactionsTable)
         .where(
           inArray(
-            transactionsTable.id,
+            purchaseTransactionsTable.id,
             sql`(select id from ${transactionsToDelete})`
           )
         )
@@ -301,7 +301,7 @@ const app = new Hono()
     ),
     zValidator(
       "json",
-      insertTransactionsSchema.omit({
+      insertPurchaseTransactionsSchema.omit({
         id: true,
         userId: true,
       })
@@ -331,20 +331,20 @@ const app = new Hono()
       const transactionsToUpdate = db.$with("transactions_to_update").as(
         db
           .select({
-            id: transactionsTable.id,
+            id: purchaseTransactionsTable.id,
           })
-          .from(transactionsTable)
+          .from(purchaseTransactionsTable)
           .where(
             and(
-              eq(transactionsTable.id, id),
-              eq(transactionsTable.userId, user.id)
+              eq(purchaseTransactionsTable.id, id),
+              eq(purchaseTransactionsTable.userId, user.id)
             )
           )
       );
 
       const [data] = await db
         .with(transactionsToUpdate)
-        .update(transactionsTable)
+        .update(purchaseTransactionsTable)
         .set({
           ...values,
           userId: user.id,
@@ -355,7 +355,7 @@ const app = new Hono()
         })
         .where(
           inArray(
-            transactionsTable.id,
+            purchaseTransactionsTable.id,
             sql`(select id from ${transactionsToUpdate})`
           )
         )
@@ -401,23 +401,23 @@ const app = new Hono()
       const transactionToDelete = db.$with("transaction_to_delete").as(
         db
           .select({
-            id: transactionsTable.id,
+            id: purchaseTransactionsTable.id,
           })
-          .from(transactionsTable)
+          .from(purchaseTransactionsTable)
           .where(
             and(
-              eq(transactionsTable.id, id),
-              eq(transactionsTable.userId, user.id)
+              eq(purchaseTransactionsTable.id, id),
+              eq(purchaseTransactionsTable.userId, user.id)
             )
           )
       );
 
       const [data] = await db
         .with(transactionToDelete)
-        .delete(transactionsTable)
+        .delete(purchaseTransactionsTable)
         .where(
           inArray(
-            transactionsTable.id,
+            purchaseTransactionsTable.id,
             sql`(select id from ${transactionToDelete})`
           )
         )

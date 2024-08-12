@@ -4,15 +4,17 @@ import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
-  (typeof client.api)[":email"]["transactions"][":id"]["$delete"]
+  (typeof client.api)[":email"]["purchase-transactions"][":id"]["$delete"]
 >;
 
-export const useDeleteTransaction = (id: string, email: string) => {
+export const useDeletePurchaseTransaction = (id: string, email: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<ResponseType, Error>({
     mutationFn: async () => {
-      const response = await client.api[":email"].transactions[":id"].$delete({
+      const response = await client.api[":email"]["purchase-transactions"][
+        ":id"
+      ].$delete({
         param: {
           id,
           email,
@@ -29,8 +31,10 @@ export const useDeleteTransaction = (id: string, email: string) => {
     },
     onSuccess: () => {
       toast.success("Transaction deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["transaction", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["purchase-transactions"] });
+      queryClient.invalidateQueries({
+        queryKey: ["purchase-transaction", { id }],
+      });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: (error) => {

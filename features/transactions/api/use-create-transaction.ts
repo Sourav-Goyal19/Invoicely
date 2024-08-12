@@ -4,18 +4,20 @@ import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
-  (typeof client.api)[":email"]["transactions"]["$post"]
+  (typeof client.api)[":email"]["purchase-transactions"]["$post"]
 >;
 type RequestType = InferRequestType<
-  (typeof client.api)[":email"]["transactions"]["$post"]
+  (typeof client.api)[":email"]["purchase-transactions"]["$post"]
 >["json"];
 
-export const useCreateTransaction = (email: string) => {
+export const useCreatePurchaseTransaction = (email: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
-      const response = await client.api[":email"].transactions.$post({
+      const response = await client.api[":email"][
+        "purchase-transactions"
+      ].$post({
         json,
         param: {
           email,
@@ -32,7 +34,7 @@ export const useCreateTransaction = (email: string) => {
     },
     onSuccess: () => {
       toast.success("Transaction created successfully");
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["purchase-transactions"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: (error) => {

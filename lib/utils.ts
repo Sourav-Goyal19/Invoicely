@@ -3,10 +3,10 @@ import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { insertTransactionsSchema } from "@/db/schema";
+import { insertPurchaseTransactionsSchema } from "@/db/schema";
 import { z } from "zod";
 
-const transactionSchema = insertTransactionsSchema.omit({
+const transactionSchema = insertPurchaseTransactionsSchema.omit({
   userId: true,
   id: true,
 });

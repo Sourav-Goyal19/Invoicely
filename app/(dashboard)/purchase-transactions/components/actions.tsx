@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
-import { useDeleteTransaction } from "@/features/transactions/api/use-delete-transaction";
+import { useDeletePurchaseTransaction } from "@/features/transactions/api/use-delete-transaction";
 import { useOpenTransaction } from "@/features/transactions/hooks/use-edit-transaction";
 
 interface ActionsProps {
@@ -20,7 +20,7 @@ interface ActionsProps {
 const Actions: React.FC<ActionsProps> = ({ id }) => {
   const { onOpen } = useOpenTransaction();
   const { data } = useSession();
-  const deleteMutation = useDeleteTransaction(id, data?.user?.email!);
+  const deleteMutation = useDeletePurchaseTransaction(id, data?.user?.email!);
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",
     "You are about to delete this transactions"

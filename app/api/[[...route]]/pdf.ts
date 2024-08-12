@@ -1,8 +1,8 @@
 import {
   branchesTable,
   categoriesTable,
-  insertTransactionsSchema,
-  transactionsTable,
+  insertPurchaseTransactionsSchema,
+  purchaseTransactionsTable,
 } from "@/db/schema";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
@@ -12,7 +12,7 @@ import autoTable from "jspdf-autotable";
 import { db } from "@/db/drizzle";
 import { and, eq, inArray, lte } from "drizzle-orm";
 
-const transactionSchema = insertTransactionsSchema.omit({
+const transactionSchema = insertPurchaseTransactionsSchema.omit({
   userId: true,
   id: true,
 });
@@ -49,7 +49,7 @@ const app = new Hono()
           .min(0, "GST must be greater than or equal to zero"),
         paymentType: z.string().min(1, "Payment Type is required"),
         transactions: z.array(
-          insertTransactionsSchema.omit({
+          insertPurchaseTransactionsSchema.omit({
             userId: true,
             id: true,
           })
@@ -120,14 +120,10 @@ const app = new Hono()
       const categoryIds = values.categoryIds;
       const totalAmount = values.totalAmount;
 
-      console.log(values);
-
       const [branch] = await db
         .select()
         .from(branchesTable)
         .where(eq(branchesTable.id, values.branchId));
-
-      console.log(branch);
 
       if (!branch) {
         return c.json(
@@ -147,21 +143,15 @@ const app = new Hono()
         return c.json({ error: "No Categories Found" }, 404);
       }
 
-      console.log(categories);
-
       const transactions = await db
         .select()
-        .from(transactionsTable)
-        .where(and(inArray(transactionsTable.categoryId, categoryIds)));
-
-      console.log(transactions);
+        .from(purchaseTransactionsTable)
+        .where(and(inArray(purchaseTransactionsTable.categoryId, categoryIds)));
 
       const finalTransactions = findMatchingTransactions(
         transactions,
         totalAmount
       );
-
-      console.log(finalTransactions);
 
       if (!finalTransactions || finalTransactions.length === 0) {
         return c.json({ error: "No matching transactions found" }, 404);
@@ -170,16 +160,16 @@ const app = new Hono()
       // finalTransactions.forEach(async (transactiontoUpdate) => {
       //   const [existingTransaction] = await db
       //     .select()
-      //     .from(transactionsTable)
-      //     .where(eq(transactionsTable.id, transactiontoUpdate.id));
+      //     .from(purchaseTransactionsTable)
+      //     .where(eq(purchaseTransactionsTable.id, transactiontoUpdate.id));
 
       //   await db
-      //     .update(transactionsTable)
+      //     .update(purchaseTransactionsTable)
       //     .set({
       //       quantity:
       //         existingTransaction.quantity - transactiontoUpdate.quantity,
       //     })
-      //     .where(eq(transactionsTable.id, transactiontoUpdate.id));
+      //     .where(eq(purchaseTransactionsTable.id, transactiontoUpdate.id));
       // });
 
       const branchName = branch.name;

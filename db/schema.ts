@@ -24,7 +24,7 @@ export const usersTable = pgTable("users", {
 });
 
 export const userRelations = relations(usersTable, ({ many }) => ({
-  transactions: many(transactionsTable),
+  transactions: many(purchaseTransactionsTable),
   branches: many(branchesTable),
 }));
 
@@ -64,7 +64,7 @@ export const categoriesTable = pgTable("categories", {
 export const categoryRelations = relations(
   categoriesTable,
   ({ many, one }) => ({
-    transactions: many(transactionsTable),
+    transactions: many(purchaseTransactionsTable),
     user: one(usersTable, {
       fields: [categoriesTable.userId],
       references: [usersTable.id],
@@ -74,7 +74,7 @@ export const categoryRelations = relations(
 
 export const insertCategorySchema = createInsertSchema(categoriesTable);
 
-export const transactionsTable = pgTable("transactions", {
+export const purchaseTransactionsTable = pgTable("purchase_transactions", {
   id: uuid("id").defaultRandom().primaryKey(),
   price: integer("price").notNull(),
   product: text("product").notNull(),
@@ -90,20 +90,23 @@ export const transactionsTable = pgTable("transactions", {
 });
 
 export const transactionsRelations = relations(
-  transactionsTable,
+  purchaseTransactionsTable,
   ({ one }) => ({
     user: one(usersTable, {
-      fields: [transactionsTable.userId],
+      fields: [purchaseTransactionsTable.userId],
       references: [usersTable.id],
     }),
     category: one(categoriesTable, {
-      fields: [transactionsTable.categoryId],
+      fields: [purchaseTransactionsTable.categoryId],
       references: [categoriesTable.id],
     }),
   })
 );
-export const insertTransactionsSchema = createInsertSchema(transactionsTable, {
-  date: z.coerce.date(),
-  price: z.coerce.number().multipleOf(0.01),
-  total: z.coerce.number().multipleOf(0.01),
-});
+export const insertPurchaseTransactionsSchema = createInsertSchema(
+  purchaseTransactionsTable,
+  {
+    date: z.coerce.date(),
+    price: z.coerce.number().multipleOf(0.01),
+    total: z.coerce.number().multipleOf(0.01),
+  }
+);

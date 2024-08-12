@@ -1,5 +1,9 @@
 import { db } from "@/db/drizzle";
-import { branchesTable, transactionsTable, usersTable } from "@/db/schema";
+import {
+  branchesTable,
+  purchaseTransactionsTable,
+  usersTable,
+} from "@/db/schema";
 import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
 import { zValidator } from "@hono/zod-validator";
 import { differenceInDays, parse, subDays } from "date-fns";
@@ -56,21 +60,21 @@ const app = new Hono().get(
       return await db
         .select({
           income:
-            sql`SUM(CASE WHEN ${transactionsTable.price} >= 0 THEN ${transactionsTable.price} ELSE 0 END)`.mapWith(
+            sql`SUM(CASE WHEN ${purchaseTransactionsTable.price} >= 0 THEN ${purchaseTransactionsTable.price} ELSE 0 END)`.mapWith(
               Number
             ),
           expenses:
-            sql`SUM(CASE WHEN ${transactionsTable.price} < 0 THEN ${transactionsTable.price} ELSE 0 END)`.mapWith(
+            sql`SUM(CASE WHEN ${purchaseTransactionsTable.price} < 0 THEN ${purchaseTransactionsTable.price} ELSE 0 END)`.mapWith(
               Number
             ),
-          remaining: sum(transactionsTable.price).mapWith(Number),
+          remaining: sum(purchaseTransactionsTable.price).mapWith(Number),
         })
-        .from(transactionsTable)
+        .from(purchaseTransactionsTable)
         .where(
           and(
-            eq(transactionsTable.userId, userId),
-            gte(transactionsTable.date, startDate),
-            lte(transactionsTable.date, endDate)
+            eq(purchaseTransactionsTable.userId, userId),
+            gte(purchaseTransactionsTable.date, startDate),
+            lte(purchaseTransactionsTable.date, endDate)
           )
         );
     }
@@ -116,26 +120,26 @@ const app = new Hono().get(
 
     const activeDays = await db
       .select({
-        date: transactionsTable.date,
+        date: purchaseTransactionsTable.date,
         income:
-          sql`SUM(CASE WHEN ${transactionsTable.price} >= 0 THEN ${transactionsTable.price} ELSE 0 END)`.mapWith(
+          sql`SUM(CASE WHEN ${purchaseTransactionsTable.price} >= 0 THEN ${purchaseTransactionsTable.price} ELSE 0 END)`.mapWith(
             Number
           ),
         expenses:
-          sql`SUM(CASE WHEN ${transactionsTable.price} < 0 THEN ABS(${transactionsTable.price}) ELSE 0 END)`.mapWith(
+          sql`SUM(CASE WHEN ${purchaseTransactionsTable.price} < 0 THEN ABS(${purchaseTransactionsTable.price}) ELSE 0 END)`.mapWith(
             Number
           ),
       })
-      .from(transactionsTable)
+      .from(purchaseTransactionsTable)
       .where(
         and(
-          eq(transactionsTable.userId, user.id),
-          gte(transactionsTable.date, startDate),
-          lte(transactionsTable.date, endDate)
+          eq(purchaseTransactionsTable.userId, user.id),
+          gte(purchaseTransactionsTable.date, startDate),
+          lte(purchaseTransactionsTable.date, endDate)
         )
       )
-      .groupBy(transactionsTable.date)
-      .orderBy(transactionsTable.date);
+      .groupBy(purchaseTransactionsTable.date)
+      .orderBy(purchaseTransactionsTable.date);
 
     const formattedActiveDays = activeDays.map((item) => ({
       date: item.date,

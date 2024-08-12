@@ -9,17 +9,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable } from "@/components/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { insertTransactionsSchema } from "@/db/schema";
+import { insertPurchaseTransactionsSchema } from "@/db/schema";
 
-import { useBulkDeleteTransactions } from "@/features/transactions/api/use-bulk-delete-transactions";
+import { useBulkDeletePurchaseTransactions } from "@/features/transactions/api/use-bulk-delete-transactions";
 import { useNewTransaction } from "@/features/transactions/hooks/use-new-transaction";
-import { useGetTransactions } from "@/features/transactions/api/use-get-transactions";
+import { useGetPurchaseTransactions } from "@/features/transactions/api/use-get-transactions";
 import { useState } from "react";
 import { useSelectBranch } from "@/hooks/use-select-branch";
 import ImportCard from "./import-card";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useBulkCreateTransactions } from "@/features/transactions/api/use-bulk-create-transactions";
+import { useBulkCreatePurchaseTransactions } from "@/features/transactions/api/use-bulk-create-transactions";
 import { useCreatePurchasePdf } from "@/features/transactions/api/use-create-purchase-pdf";
 import { useSelectPurchase } from "@/hooks/use-select-purchase";
 import LoadingModal from "@/components/ui/loading-modal";
@@ -32,7 +32,7 @@ const INITIAL_IMPORT_RESULTS = {
   meta: {},
 };
 
-const CsvFormFields = insertTransactionsSchema.omit({
+const CsvFormFields = insertPurchaseTransactionsSchema.omit({
   userId: true,
   id: true,
 });
@@ -46,9 +46,13 @@ const TransactionsPageClient = () => {
   const [importResults, setImportResults] = useState(INITIAL_IMPORT_RESULTS);
   const { onOpen } = useNewTransaction();
 
-  const TransactionQuery = useGetTransactions(authdata?.user?.email!);
-  const deletetransactions = useBulkDeleteTransactions(authdata?.user?.email!);
-  const bulkCreateMutation = useBulkCreateTransactions(authdata?.user?.email!);
+  const TransactionQuery = useGetPurchaseTransactions(authdata?.user?.email!);
+  const deletetransactions = useBulkDeletePurchaseTransactions(
+    authdata?.user?.email!
+  );
+  const bulkCreateMutation = useBulkCreatePurchaseTransactions(
+    authdata?.user?.email!
+  );
 
   const purchasePdfMutation = useCreatePurchasePdf(authdata?.user?.email!);
   const [PurchaseForm, purchaseConfirm] = useSelectPurchase();

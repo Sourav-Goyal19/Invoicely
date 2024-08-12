@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Trash } from "lucide-react";
-import { insertTransactionsSchema } from "@/db/schema";
+import { insertPurchaseTransactionsSchema } from "@/db/schema";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ const formFields = z.object({
   total: z.coerce.number().min(0),
 });
 
-const apiSchema = insertTransactionsSchema.omit({
+const apiSchema = insertPurchaseTransactionsSchema.omit({
   id: true,
   userId: true,
 });
@@ -34,7 +34,7 @@ const apiSchema = insertTransactionsSchema.omit({
 type FormValues = z.infer<typeof formFields>;
 type ApiFormValues = z.infer<typeof apiSchema>;
 
-interface TransactionFormProps {
+interface PurchaseTransactionFormProps {
   id?: string;
   defaultValues?: FormValues;
   onSubmit: (values: ApiFormValues) => void;
@@ -46,7 +46,9 @@ interface TransactionFormProps {
   categoryOptions: { label: string; value: string }[];
 }
 
-export const TransactionForm: React.FC<TransactionFormProps> = ({
+export const PurchaseTransactionForm: React.FC<
+  PurchaseTransactionFormProps
+> = ({
   id,
   defaultValues,
   onSubmit,

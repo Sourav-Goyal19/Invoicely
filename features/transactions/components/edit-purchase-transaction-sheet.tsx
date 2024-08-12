@@ -8,35 +8,38 @@ import {
 import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
-import { insertTransactionsSchema } from "@/db/schema";
-import { TransactionForm } from "@/features/transactions/components/transaction-form";
+import { insertPurchaseTransactionsSchema } from "@/db/schema";
+import { PurchaseTransactionForm } from "@/features/transactions/components/purchase-transaction-form";
 import { useOpenTransaction } from "@/features/transactions/hooks/use-edit-transaction";
-import { useGetTransaction } from "@/features/transactions/api/use-get-transaction";
-import { useEditTransaction } from "@/features/transactions/api/use-edit-transaction";
-import { useDeleteTransaction } from "@/features/transactions/api/use-delete-transaction";
+import { useGetPurchaseTransaction } from "@/features/transactions/api/use-get-transaction";
+import { useEditPurchaseTransaction } from "@/features/transactions/api/use-edit-transaction";
+import { useDeletePurchaseTransaction } from "@/features/transactions/api/use-delete-transaction";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useCreateBranch } from "@/features/branches/api/use-create-branch";
 import { useGetCategories } from "@/features/categories/api/use-get-categories";
 import { useCreateCategory } from "@/features/categories/api/use-create-category";
 
-const apiSchema = insertTransactionsSchema.omit({
+const apiSchema = insertPurchaseTransactionsSchema.omit({
   id: true,
   userId: true,
 });
 
 type ApiFormValues = z.input<typeof apiSchema>;
 
-const EditTransactionSheet = () => {
+const EditPurchaseTransactionSheet = () => {
   const { data } = useSession();
   const { isOpen, onClose, id } = useOpenTransaction();
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure?",
     "You are about to delete this Transaction"
   );
-  const transactionQuery = useGetTransaction(id!, data?.user?.email!);
-  const transactionMutation = useEditTransaction(id!, data?.user?.email!);
-  const deleteMutation = useDeleteTransaction(id!, data?.user?.email!);
+  const transactionQuery = useGetPurchaseTransaction(id!, data?.user?.email!);
+  const transactionMutation = useEditPurchaseTransaction(
+    id!,
+    data?.user?.email!
+  );
+  const deleteMutation = useDeletePurchaseTransaction(id!, data?.user?.email!);
 
   const branchQuery = useGetBranches(data?.user?.email!);
   const branchMutation = useCreateBranch(data?.user?.email!);
@@ -129,7 +132,7 @@ const EditTransactionSheet = () => {
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <TransactionForm
+          <PurchaseTransactionForm
             id={id}
             onSubmit={onSubmit}
             defaultValues={defaultValues}
@@ -146,4 +149,4 @@ const EditTransactionSheet = () => {
   );
 };
 
-export default EditTransactionSheet;
+export default EditPurchaseTransactionSheet;
