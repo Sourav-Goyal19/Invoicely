@@ -28,13 +28,12 @@ import { Input } from "@/components/ui/input";
 import { Trash, Upload } from "lucide-react";
 import { useSelectCustomer } from "@/hooks/use-select-customer";
 import { toast } from "sonner";
-import { useCreateCustomerPdf } from "@/features/transactions/api/use-create-customer-pdf";
+import { useCreateCustomerPdf } from "@/features/purchase-transactions/api/use-create-customer-pdf";
 import { useSession } from "next-auth/react";
 import { insertPurchaseTransactionsSchema } from "@/db/schema";
 import { z } from "zod";
 import LoadingModal from "./ui/loading-modal";
-import { useCreatePurchasePdf } from "@/features/transactions/api/use-create-purchase-pdf";
-import { useSelectPurchase } from "@/hooks/use-select-purchase";
+import { usePathname } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -67,6 +66,8 @@ export function DataTable<TData, TValue>({
     "Are you sure?",
     "You are about to perform a bulk delete"
   );
+
+  const pathname = usePathname();
 
   const { data: authdata } = useSession();
 
@@ -160,44 +161,46 @@ export function DataTable<TData, TValue>({
               <Trash className="size-4 mr-2" />
               Delete ({table.getSelectedRowModel().rows.length})
             </Button>
-            <Button
-              size="sm"
-              onClick={async () => {
-                const { customerName, branchId, GST, paymentType } =
-                  await customerConfirm();
-                if (!customerName) {
-                  return toast.error("Customer name is required");
-                }
-                if (!branchId) {
-                  return toast.error("Branch Name is required");
-                }
-                if (!GST) {
-                  return toast.error("GST is required");
-                }
-                if (!paymentType) {
-                  return toast.error("Payment Type is required");
-                }
-                const transactions = table
-                  .getSelectedRowModel()
-                  .rows.map((row) => ({
-                    date: row.getValue("date") as Date,
-                    product: row.getValue("product") as string,
-                    quantity: row.getValue("quantity") as number,
-                    price: row.getValue("price") as number,
-                    total: row.getValue("total") as number,
-                  }));
-                handleCustomerPdf(
-                  customerName,
-                  branchId,
-                  GST,
-                  paymentType,
-                  transactions
-                );
-              }}
-            >
-              <Upload className="mr-2 h-4 w-4" />
-              Export For Customer ({table.getSelectedRowModel().rows.length})
-            </Button>
+            {pathname == "/sales-transactions" && (
+              <Button
+                size="sm"
+                onClick={async () => {
+                  const { customerName, branchId, GST, paymentType } =
+                    await customerConfirm();
+                  if (!customerName) {
+                    return toast.error("Customer name is required");
+                  }
+                  if (!branchId) {
+                    return toast.error("Branch Name is required");
+                  }
+                  if (!GST) {
+                    return toast.error("GST is required");
+                  }
+                  if (!paymentType) {
+                    return toast.error("Payment Type is required");
+                  }
+                  const transactions = table
+                    .getSelectedRowModel()
+                    .rows.map((row) => ({
+                      date: row.getValue("date") as Date,
+                      product: row.getValue("product") as string,
+                      quantity: row.getValue("quantity") as number,
+                      price: row.getValue("price") as number,
+                      total: row.getValue("total") as number,
+                    }));
+                  handleCustomerPdf(
+                    customerName,
+                    branchId,
+                    GST,
+                    paymentType,
+                    transactions
+                  );
+                }}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Export For Customer ({table.getSelectedRowModel().rows.length})
+              </Button>
+            )}
           </div>
         )}
       </div>

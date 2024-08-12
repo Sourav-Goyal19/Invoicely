@@ -9,21 +9,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable } from "@/components/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { insertPurchaseTransactionsSchema } from "@/db/schema";
+import { insertSalesTransactionsSchema } from "@/db/schema";
 
+import { useBulkDeleteSalesTransactions } from "@/features/sales-transactions/api/use-bulk-delete-sales-transactions";
+import { useNewTransaction } from "@/features/sales-transactions/hooks/use-new-transaction";
+import { useGetSalesTransactions } from "@/features/sales-transactions/api/use-get-sales-transactions";
 import { useState } from "react";
 import { useSelectBranch } from "@/hooks/use-select-branch";
 import ImportCard from "./import-card";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useBulkCreateSalesTransactions } from "@/features/sales-transactions/api/use-bulk-create-sales-transactions";
+import { useCreatePurchasePdf } from "@/features/purchase-transactions/api/use-create-purchase-pdf";
 import { useSelectPurchase } from "@/hooks/use-select-purchase";
 import LoadingModal from "@/components/ui/loading-modal";
-
-import { useNewTransaction } from "@/features/purchase-transactions/hooks/use-new-transaction";
-import { useGetPurchaseTransactions } from "@/features/purchase-transactions/api/use-get-purchase-transactions";
-import { useBulkDeletePurchaseTransactions } from "@/features/purchase-transactions/api/use-bulk-delete-purchase-transactions";
-import { useBulkCreatePurchaseTransactions } from "@/features/purchase-transactions/api/use-bulk-create-purchase-transactions";
-import { useCreatePurchasePdf } from "@/features/purchase-transactions/api/use-create-purchase-pdf";
 
 type VARIANT = "LIST" | "IMPORT";
 
@@ -33,7 +32,7 @@ const INITIAL_IMPORT_RESULTS = {
   meta: {},
 };
 
-const CsvFormFields = insertPurchaseTransactionsSchema.omit({
+const CsvFormFields = insertSalesTransactionsSchema.omit({
   userId: true,
   id: true,
 });
@@ -47,16 +46,14 @@ const TransactionsPageClient = () => {
   const [importResults, setImportResults] = useState(INITIAL_IMPORT_RESULTS);
   const { onOpen } = useNewTransaction();
 
-  const TransactionQuery = useGetPurchaseTransactions(authdata?.user?.email!);
-  const deletetransactions = useBulkDeletePurchaseTransactions(
+  const TransactionQuery = useGetSalesTransactions(authdata?.user?.email!);
+  const deletetransactions = useBulkDeleteSalesTransactions(
     authdata?.user?.email!
   );
-  const bulkCreateMutation = useBulkCreatePurchaseTransactions(
+  const bulkCreateMutation = useBulkCreateSalesTransactions(
     authdata?.user?.email!
   );
 
-  const purchasePdfMutation = useCreatePurchasePdf(authdata?.user?.email!);
-  const [PurchaseForm, purchaseConfirm] = useSelectPurchase();
   const [isLoading, setIsLoading] = useState(false);
 
   const [BranchDialog, confirm] = useSelectBranch();
@@ -71,40 +68,6 @@ const TransactionsPageClient = () => {
   const onCancelImport = () => {
     setImportResults(INITIAL_IMPORT_RESULTS);
     setVariant("LIST");
-  };
-
-  const handlePurchasePdf = (
-    branchId: string,
-    GST: number,
-    paymentType: string,
-    categoryIds: string[],
-    totalAmount: number
-  ) => {
-    setIsLoading(true);
-    purchasePdfMutation.mutate(
-      {
-        branchId,
-        GST,
-        paymentType,
-        categoryIds,
-        totalAmount,
-      },
-      {
-        onSuccess: (data) => {
-          setIsLoading(false);
-          const url = URL.createObjectURL(data);
-          const link = document.createElement("a");
-          link.href = url;
-          link.target = "_blank";
-          // link.download = "invoice.pdf";
-          link.click();
-        },
-        onError: (error) => {
-          setIsLoading(false);
-          toast.error(error.message);
-        },
-      }
-    );
   };
 
   const handleSubmitImport = async (values: CsvFormValues[]) => {
@@ -161,7 +124,6 @@ const TransactionsPageClient = () => {
   return (
     <>
       {isLoading && <LoadingModal />}
-      <PurchaseForm />
       <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
         <Card className="border-none drop-shadow-sm">
           <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
@@ -172,46 +134,6 @@ const TransactionsPageClient = () => {
               <Button onClick={onOpen} size={"sm"}>
                 <Plus className="size-4 mr-2" />
                 Add New
-              </Button>
-              <Button
-                size="sm"
-                onClick={async () => {
-                  const {
-                    branchId,
-                    GST,
-                    paymentType,
-                    categoryIds,
-                    totalAmount,
-                  } = await purchaseConfirm();
-                  if (!branchId) {
-                    return toast.error("Branch Name is required");
-                  }
-                  if (!GST) {
-                    return toast.error("GST is required");
-                  }
-                  if (!paymentType) {
-                    return toast.error("Payment Type is required");
-                  }
-
-                  if (!categoryIds || categoryIds.length === 0) {
-                    return toast.error("Please select at least one category");
-                  }
-
-                  if (!totalAmount || totalAmount <= 0) {
-                    return toast.error("Total Amount should be greater than 0");
-                  }
-
-                  handlePurchasePdf(
-                    branchId,
-                    GST,
-                    paymentType,
-                    categoryIds,
-                    totalAmount
-                  );
-                }}
-              >
-                <Upload className="mr-2 h-4 w-4" />
-                Export For Purchase
               </Button>
               {/* <UploadButton onUpload={onUpload} /> */}
             </div>

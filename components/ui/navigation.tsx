@@ -17,6 +17,10 @@ const routes = [
     label: "Purchase Transactions",
   },
   {
+    href: "/sales-transactions",
+    label: "Sales Transactions",
+  },
+  {
     href: "/categories",
     label: "Categories",
   },

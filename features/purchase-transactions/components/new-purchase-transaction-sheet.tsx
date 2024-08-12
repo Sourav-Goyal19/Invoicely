@@ -13,7 +13,7 @@ import { Loader2 } from "lucide-react";
 
 import { PurchaseTransactionForm } from "./purchase-transaction-form";
 import { useNewTransaction } from "../hooks/use-new-transaction";
-import { useCreatePurchaseTransaction } from "../api/use-create-transaction";
+import { useCreatePurchaseTransaction } from "../api/use-create-purchase-transaction";
 
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useCreateBranch } from "@/features/branches/api/use-create-branch";

@@ -1,5 +1,5 @@
 import { useOpenCategory } from "@/features/categories/hooks/use-edit-category";
-import { useOpenTransaction } from "@/features/purchase-transactions/hooks/use-edit-transaction";
+import { useOpenTransaction } from "@/features/sales-transactions/hooks/use-edit-transaction";
 import { cn } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
 

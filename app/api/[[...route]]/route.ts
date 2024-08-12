@@ -4,6 +4,7 @@ import { HTTPException } from "hono/http-exception";
 
 import BranchRouter from "./branches";
 import PurchaseTransactionsRouter from "./purchase-transactions";
+import SalesTransactionsRouter from "./sales-transactions";
 import SummaryRouter from "./summary";
 import PdfRouter from "./pdf";
 import CategoryRouter from "./categories";
@@ -24,6 +25,7 @@ const routes = app
   .route("/:email/branches", BranchRouter)
   .route("/:email/categories", CategoryRouter)
   .route("/:email/purchase-transactions", PurchaseTransactionsRouter)
+  .route("/:email/sales-transactions", SalesTransactionsRouter)
   .route("/:email/pdf", PdfRouter);
 
 export const GET = handle(app);

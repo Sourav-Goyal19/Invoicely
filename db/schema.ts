@@ -24,7 +24,8 @@ export const usersTable = pgTable("users", {
 });
 
 export const userRelations = relations(usersTable, ({ many }) => ({
-  transactions: many(purchaseTransactionsTable),
+  purchaseTransactions: many(purchaseTransactionsTable),
+  salesTransactions: many(salesTransactionsTable),
   branches: many(branchesTable),
 }));
 
@@ -64,7 +65,8 @@ export const categoriesTable = pgTable("categories", {
 export const categoryRelations = relations(
   categoriesTable,
   ({ many, one }) => ({
-    transactions: many(purchaseTransactionsTable),
+    purchaseTransactions: many(purchaseTransactionsTable),
+    salesTransactions: many(salesTransactionsTable),
     user: one(usersTable, {
       fields: [categoriesTable.userId],
       references: [usersTable.id],
@@ -104,6 +106,44 @@ export const transactionsRelations = relations(
 );
 export const insertPurchaseTransactionsSchema = createInsertSchema(
   purchaseTransactionsTable,
+  {
+    date: z.coerce.date(),
+    price: z.coerce.number().multipleOf(0.01),
+    total: z.coerce.number().multipleOf(0.01),
+  }
+);
+
+export const salesTransactionsTable = pgTable("sales_transactions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  price: integer("price").notNull(),
+  product: text("product").notNull(),
+  quantity: integer("quantity").notNull(),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  date: timestamp("date", { mode: "date" }).notNull(),
+  categoryId: uuid("category_id").references(() => categoriesTable.id),
+  userId: uuid("user_id")
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+});
+
+export const salesTransactionsRelations = relations(
+  salesTransactionsTable,
+  ({ one }) => ({
+    user: one(usersTable, {
+      fields: [salesTransactionsTable.userId],
+      references: [usersTable.id],
+    }),
+    category: one(categoriesTable, {
+      fields: [salesTransactionsTable.categoryId],
+      references: [categoriesTable.id],
+    }),
+  })
+);
+
+export const insertSalesTransactionsSchema = createInsertSchema(
+  salesTransactionsTable,
   {
     date: z.coerce.date(),
     price: z.coerce.number().multipleOf(0.01),
