@@ -20,6 +20,9 @@ import ImportCard from "./import-card";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useBulkCreateTransactions } from "@/features/transactions/api/use-bulk-create-transactions";
+import { useCreatePurchasePdf } from "@/features/transactions/api/use-create-purchase-pdf";
+import { useSelectPurchase } from "@/hooks/use-select-purchase";
+import LoadingModal from "@/components/ui/loading-modal";
 
 type VARIANT = "LIST" | "IMPORT";
 
@@ -47,6 +50,10 @@ const TransactionsPageClient = () => {
   const deletetransactions = useBulkDeleteTransactions(authdata?.user?.email!);
   const bulkCreateMutation = useBulkCreateTransactions(authdata?.user?.email!);
 
+  const purchasePdfMutation = useCreatePurchasePdf(authdata?.user?.email!);
+  const [PurchaseForm, purchaseConfirm] = useSelectPurchase();
+  const [isLoading, setIsLoading] = useState(false);
+
   const [BranchDialog, confirm] = useSelectBranch();
 
   const isDisabled = TransactionQuery.isLoading || deletetransactions.isPending;
@@ -59,6 +66,40 @@ const TransactionsPageClient = () => {
   const onCancelImport = () => {
     setImportResults(INITIAL_IMPORT_RESULTS);
     setVariant("LIST");
+  };
+
+  const handlePurchasePdf = (
+    branchId: string,
+    GST: number,
+    paymentType: string,
+    categoryIds: string[],
+    totalAmount: number
+  ) => {
+    setIsLoading(true);
+    purchasePdfMutation.mutate(
+      {
+        branchId,
+        GST,
+        paymentType,
+        categoryIds,
+        totalAmount,
+      },
+      {
+        onSuccess: (data) => {
+          setIsLoading(false);
+          const url = URL.createObjectURL(data);
+          const link = document.createElement("a");
+          link.href = url;
+          link.target = "_blank";
+          // link.download = "invoice.pdf";
+          link.click();
+        },
+        onError: (error) => {
+          setIsLoading(false);
+          toast.error(error.message);
+        },
+      }
+    );
   };
 
   const handleSubmitImport = async (values: CsvFormValues[]) => {
@@ -113,37 +154,81 @@ const TransactionsPageClient = () => {
 
   const data: ResponseType[] = TransactionQuery.data || [];
   return (
-    <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
-      <Card className="border-none drop-shadow-sm">
-        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-xl line-clamp-1">
-            Transactions History
-          </CardTitle>
-          <div className="flex flex-col lg:flex-row lg:items-center gap-3">
-            <Button onClick={onOpen} size={"sm"}>
-              <Plus className="size-4 mr-2" />
-              Add New
-            </Button>
-            {/* <UploadButton onUpload={onUpload} /> */}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <DataTable
-            columns={columns}
-            data={data}
-            filterKey="product"
-            onDelete={(rows) => {
-              const ids = rows.map((r) => r.original.id);
-              const deleted = deletetransactions.mutate({
-                ids,
-              });
-              console.log(deleted);
-            }}
-            disabled={isDisabled}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      {isLoading && <LoadingModal />}
+      <PurchaseForm />
+      <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
+        <Card className="border-none drop-shadow-sm">
+          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+            <CardTitle className="text-xl line-clamp-1">
+              Transactions History
+            </CardTitle>
+            <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+              <Button onClick={onOpen} size={"sm"}>
+                <Plus className="size-4 mr-2" />
+                Add New
+              </Button>
+              <Button
+                size="sm"
+                onClick={async () => {
+                  const {
+                    branchId,
+                    GST,
+                    paymentType,
+                    categoryIds,
+                    totalAmount,
+                  } = await purchaseConfirm();
+                  if (!branchId) {
+                    return toast.error("Branch Name is required");
+                  }
+                  if (!GST) {
+                    return toast.error("GST is required");
+                  }
+                  if (!paymentType) {
+                    return toast.error("Payment Type is required");
+                  }
+
+                  if (!categoryIds || categoryIds.length === 0) {
+                    return toast.error("Please select at least one category");
+                  }
+
+                  if (!totalAmount || totalAmount <= 0) {
+                    return toast.error("Total Amount should be greater than 0");
+                  }
+
+                  handlePurchasePdf(
+                    branchId,
+                    GST,
+                    paymentType,
+                    categoryIds,
+                    totalAmount
+                  );
+                }}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Export For Purchase
+              </Button>
+              {/* <UploadButton onUpload={onUpload} /> */}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={columns}
+              data={data}
+              filterKey="product"
+              onDelete={(rows) => {
+                const ids = rows.map((r) => r.original.id);
+                const deleted = deletetransactions.mutate({
+                  ids,
+                });
+                console.log(deleted);
+              }}
+              disabled={isDisabled}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 };
 

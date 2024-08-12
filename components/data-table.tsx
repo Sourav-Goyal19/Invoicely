@@ -71,7 +71,6 @@ export function DataTable<TData, TValue>({
   const { data: authdata } = useSession();
 
   const customerPdfMutation = useCreateCustomerPdf(authdata?.user?.email!);
-  const purchasePdfMutation = useCreatePurchasePdf(authdata?.user?.email!);
 
   const handleCustomerPdf = (
     customerName: string,
@@ -109,41 +108,8 @@ export function DataTable<TData, TValue>({
       }
     );
   };
-  const handlePurchasePdf = (
-    branchId: string,
-    GST: number,
-    paymentType: string,
-    transactions: transactionType[]
-  ) => {
-    setIsLoading(true);
-    purchasePdfMutation.mutate(
-      {
-        branchId,
-        GST,
-        paymentType,
-        transactions,
-      },
-      {
-        onSuccess: (data) => {
-          setIsLoading(false);
-          const url = URL.createObjectURL(data);
-          const link = document.createElement("a");
-          link.href = url;
-          link.target = "_blank";
-          // link.download = "invoice.pdf";
-          table.resetRowSelection();
-          link.click();
-        },
-        onError: (error) => {
-          setIsLoading(false);
-          toast.error(error.message);
-        },
-      }
-    );
-  };
 
   const [CustomerForm, customerConfirm] = useSelectCustomer();
-  const [PurchaseForm, purchaseConfirm] = useSelectPurchase();
 
   const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
@@ -168,7 +134,6 @@ export function DataTable<TData, TValue>({
       {isLoading && <LoadingModal />}
       <ConfirmDialog />
       <CustomerForm />
-      <PurchaseForm />
       <div className="flex items-center py-4 gap-4">
         <Input
           placeholder={`Filter ${filterKey}......`}
@@ -232,34 +197,6 @@ export function DataTable<TData, TValue>({
             >
               <Upload className="mr-2 h-4 w-4" />
               Export For Customer ({table.getSelectedRowModel().rows.length})
-            </Button>
-            <Button
-              size="sm"
-              onClick={async () => {
-                const { branchId, GST, paymentType } = await purchaseConfirm();
-                if (!branchId) {
-                  return toast.error("Branch Name is required");
-                }
-                if (!GST) {
-                  return toast.error("GST is required");
-                }
-                if (!paymentType) {
-                  return toast.error("Payment Type is required");
-                }
-                const transactions = table
-                  .getSelectedRowModel()
-                  .rows.map((row) => ({
-                    date: row.getValue("date") as Date,
-                    product: row.getValue("product") as string,
-                    quantity: row.getValue("quantity") as number,
-                    price: row.getValue("price") as number,
-                    total: row.getValue("total") as number,
-                  }));
-                handlePurchasePdf(branchId, GST, paymentType, transactions);
-              }}
-            >
-              <Upload className="mr-2 h-4 w-4" />
-              Export For Purchase ({table.getSelectedRowModel().rows.length})
             </Button>
           </div>
         )}

@@ -14,11 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useGetCategories } from "@/features/categories/api/use-get-categories";
+import { SelectCategories } from "@/components/multiple-category";
 
 interface PurchaseDetails {
   branchId?: string;
   GST?: number;
+  totalAmount?: number;
   paymentType?: string;
+  categoryIds?: string[];
 }
 
 interface ConfirmationDialogProps {
@@ -27,6 +31,7 @@ interface ConfirmationDialogProps {
   onCancel: () => void;
   onCreateBranch: (name: string) => void;
   branchOptions: { value: string; label: string }[];
+  categoryOptions: { value: string; label: string }[];
   isLoading: boolean;
 }
 
@@ -36,17 +41,17 @@ const ConfirmationDialog = ({
   onCancel,
   onCreateBranch,
   branchOptions,
+  categoryOptions,
   isLoading,
 }: ConfirmationDialogProps) => {
-  const [customerName, setCustomerName] = useState<string | undefined>(
-    undefined
-  );
   const [branchId, setBranchId] = useState<string | undefined>(undefined);
   const [GST, setGST] = useState<number | undefined>(undefined);
+  const [totalAmount, setTotalAmount] = useState<number | undefined>(undefined);
   const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
 
   const handleConfirm = () => {
-    onConfirm({ branchId, GST, paymentType });
+    onConfirm({ branchId, GST, paymentType, categoryIds, totalAmount });
   };
 
   const handleCancel = () => {
@@ -62,6 +67,19 @@ const ConfirmationDialog = ({
           onCreate={onCreateBranch}
           onChange={(id) => setBranchId(id)}
           disabled={isLoading}
+        />
+        <SelectCategories
+          categoryOptions={categoryOptions}
+          onChange={(values) => {
+            setCategoryIds(values);
+          }}
+          placeholder="Select Categories"
+          disabled={isLoading}
+        />
+        <Input
+          placeholder="Enter Total Amount"
+          type="number"
+          onChange={(e) => setTotalAmount(Number(e.target.value))}
         />
         <Input
           placeholder="Enter GST Amount"
@@ -101,6 +119,13 @@ export const useSelectPurchase = (): [
   const branchQuery = useGetBranches(data?.user?.email!);
   const branchMutation = useCreateBranch(data?.user?.email!);
 
+  const categoryQuery = useGetCategories(data?.user?.email!);
+
+  const categoryOptions = (categoryQuery.data || []).map((category) => ({
+    value: category.id,
+    label: category.name,
+  }));
+
   const branchOptions = (branchQuery.data || []).map((branch) => ({
     value: branch.id,
     label: branch.name,
@@ -120,6 +145,7 @@ export const useSelectPurchase = (): [
       branchId: undefined,
       GST: undefined,
       paymentType: undefined,
+      categoryIds: [],
     });
     setPromise(null);
   };
@@ -134,7 +160,12 @@ export const useSelectPurchase = (): [
       onCancel={handleClose}
       onCreateBranch={onCreateBranch}
       branchOptions={branchOptions}
-      isLoading={branchMutation.isPending || branchQuery.isLoading}
+      categoryOptions={categoryOptions}
+      isLoading={
+        branchMutation.isPending ||
+        branchQuery.isLoading ||
+        categoryQuery.isLoading
+      }
     />
   );
 

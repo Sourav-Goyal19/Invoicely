@@ -1,11 +1,16 @@
-import { branchesTable, insertTransactionsSchema } from "@/db/schema";
+import {
+  branchesTable,
+  categoriesTable,
+  insertTransactionsSchema,
+  transactionsTable,
+} from "@/db/schema";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { db } from "@/db/drizzle";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray, lte } from "drizzle-orm";
 
 const transactionSchema = insertTransactionsSchema.omit({
   userId: true,
@@ -13,6 +18,17 @@ const transactionSchema = insertTransactionsSchema.omit({
 });
 
 type transactionType = z.infer<typeof transactionSchema>;
+
+interface Transaction {
+  date: Date;
+  id: string;
+  price: number;
+  product: string;
+  quantity: number;
+  total: string;
+  userId: string;
+  categoryId: string | null;
+}
 
 const app = new Hono()
   .post(
@@ -94,22 +110,24 @@ const app = new Hono()
           .number()
           .min(0, "GST must be greater than or equal to zero"),
         paymentType: z.string().min(1, "Payment Type is required"),
-        transactions: z.array(
-          insertTransactionsSchema.omit({
-            userId: true,
-            id: true,
-          })
-        ),
+        categoryIds: z.array(z.string().uuid("Invalid category Id")),
+        totalAmount: z.coerce.number(),
       })
     ),
     async (c) => {
       const values = c.req.valid("json");
       const paymentType = values.paymentType;
+      const categoryIds = values.categoryIds;
+      const totalAmount = values.totalAmount;
+
+      console.log(values);
 
       const [branch] = await db
         .select()
         .from(branchesTable)
         .where(eq(branchesTable.id, values.branchId));
+
+      console.log(branch);
 
       if (!branch) {
         return c.json(
@@ -119,25 +137,66 @@ const app = new Hono()
           404
         );
       }
-      const branchName = branch.name;
-      const GST = values.GST;
-      const SGSTPercent = GST / 2;
-      const CGSTPercent = SGSTPercent;
 
-      let total = values.transactions.reduce(
-        (acc, curr) => acc + curr.total,
-        0
+      const categories = await db
+        .select()
+        .from(categoriesTable)
+        .where(inArray(categoriesTable.id, categoryIds));
+
+      if (categories.length <= 0) {
+        return c.json({ error: "No Categories Found" }, 404);
+      }
+
+      console.log(categories);
+
+      const transactions = await db
+        .select()
+        .from(transactionsTable)
+        .where(and(inArray(transactionsTable.categoryId, categoryIds)));
+
+      console.log(transactions);
+
+      const finalTransactions = findMatchingTransactions(
+        transactions,
+        totalAmount
       );
 
-      const amountBeforeTax = calculateAmountBeforeGST(total, GST);
+      console.log(finalTransactions);
 
-      const discountFactor = amountBeforeTax / total;
+      if (!finalTransactions || finalTransactions.length === 0) {
+        return c.json({ error: "No matching transactions found" }, 404);
+      }
+
+      // finalTransactions.forEach(async (transactiontoUpdate) => {
+      //   const [existingTransaction] = await db
+      //     .select()
+      //     .from(transactionsTable)
+      //     .where(eq(transactionsTable.id, transactiontoUpdate.id));
+
+      //   await db
+      //     .update(transactionsTable)
+      //     .set({
+      //       quantity:
+      //         existingTransaction.quantity - transactiontoUpdate.quantity,
+      //     })
+      //     .where(eq(transactionsTable.id, transactiontoUpdate.id));
+      // });
+
+      const branchName = branch.name;
+      const GST = values.GST;
+
+      const formattedFinalTransactions = finalTransactions.map(
+        (transaction) => ({
+          ...transaction,
+          total: parseFloat(transaction.total),
+        })
+      );
 
       const pdfBuffer = generatePDFforPurchase(
         branchName,
         paymentType,
         GST,
-        values.transactions
+        formattedFinalTransactions
       );
 
       const pdfArrayBuffer = await pdfBuffer.arrayBuffer();
@@ -154,6 +213,53 @@ const calculateAmountBeforeGST = (price: number, percent: number) => {
   if (!price || !percent) return 0;
   return Number((price / (1 + percent / 100)).toFixed(2));
 };
+
+function findMatchingTransactions(
+  transactions: Transaction[],
+  targetAmount: number
+): Transaction[] | null {
+  function backtrack(
+    startIndex: number,
+    currentAmount: number,
+    currentTransactions: Transaction[]
+  ): Transaction[] | null {
+    if (currentAmount === targetAmount) {
+      return currentTransactions;
+    }
+
+    if (currentAmount > targetAmount || startIndex === transactions.length) {
+      return null;
+    }
+
+    for (let i = startIndex; i < transactions.length; i++) {
+      const transaction = transactions[i];
+      const totalValue = parseFloat(transaction.total);
+
+      for (let q = 1; q <= transaction.quantity; q++) {
+        const newTotal =
+          currentAmount + totalValue * (q / transaction.quantity);
+
+        if (newTotal > targetAmount) break;
+
+        const result = backtrack(
+          i + 1,
+          newTotal,
+          currentTransactions.concat({
+            ...transaction,
+            quantity: q,
+            total: (totalValue * (q / transaction.quantity)).toFixed(2),
+          })
+        );
+
+        if (result) return result;
+      }
+    }
+
+    return null;
+  }
+
+  return backtrack(0, 0, []) || null;
+}
 
 const generatePDFforPurchase = (
   branchName: string,
