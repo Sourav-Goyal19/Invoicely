@@ -9,6 +9,7 @@ interface Props {
   onCreate?: (value: string) => void;
   options?: { value: string; label: string }[];
   value?: string | null | undefined;
+  defaultValue?: { value: string; label: string };
   disabled?: boolean;
   placeholder?: string;
 }
@@ -19,6 +20,7 @@ export const Select: React.FC<Props> = ({
   options = [],
   value,
   disabled,
+  defaultValue,
   placeholder,
 }) => {
   const onSelect = (option: SingleValue<{ label: string; value: string }>) => {
@@ -32,6 +34,7 @@ export const Select: React.FC<Props> = ({
   return (
     <CreateableSelect
       placeholder={placeholder}
+      defaultValue={defaultValue}
       className="text-sm h-10"
       styles={{
         control: (provided) => ({

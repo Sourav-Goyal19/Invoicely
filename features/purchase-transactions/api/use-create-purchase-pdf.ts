@@ -1,5 +1,5 @@
 import { client } from "@/lib/hono";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType } from "hono";
 import { toast } from "sonner";
 
@@ -9,6 +9,7 @@ type RequestType = InferRequestType<
 >["json"];
 
 export const useCreatePurchasePdf = (email: string) => {
+  const queryClient = useQueryClient();
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
       const response = await client.api[":email"].pdf.purchase.$post({
@@ -23,6 +24,8 @@ export const useCreatePurchasePdf = (email: string) => {
       return response.blob();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["purchase-transaction"] });
+      queryClient.invalidateQueries({ queryKey: ["purchase-transactions"] });
       toast.success("PDF created successfully");
     },
     onError: (error) => {

@@ -157,20 +157,23 @@ const app = new Hono()
         return c.json({ error: "No matching transactions found" }, 404);
       }
 
-      // finalTransactions.forEach(async (transactiontoUpdate) => {
-      //   const [existingTransaction] = await db
-      //     .select()
-      //     .from(purchaseTransactionsTable)
-      //     .where(eq(purchaseTransactionsTable.id, transactiontoUpdate.id));
+      finalTransactions.forEach(async (transactiontoUpdate) => {
+        const [existingTransaction] = await db
+          .select()
+          .from(purchaseTransactionsTable)
+          .where(eq(purchaseTransactionsTable.id, transactiontoUpdate.id));
 
-      //   await db
-      //     .update(purchaseTransactionsTable)
-      //     .set({
-      //       quantity:
-      //         existingTransaction.quantity - transactiontoUpdate.quantity,
-      //     })
-      //     .where(eq(purchaseTransactionsTable.id, transactiontoUpdate.id));
-      // });
+        const newQuantity =
+          existingTransaction.quantity - transactiontoUpdate.quantity;
+
+        await db
+          .update(purchaseTransactionsTable)
+          .set({
+            quantity: newQuantity,
+            total: String(transactiontoUpdate.price * newQuantity),
+          })
+          .where(eq(purchaseTransactionsTable.id, transactiontoUpdate.id));
+      });
 
       const branchName = branch.name;
       const GST = values.GST;

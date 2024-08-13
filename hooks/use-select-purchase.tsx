@@ -63,6 +63,7 @@ const ConfirmationDialog = ({
       <DialogContent>
         <Select
           options={branchOptions}
+          defaultValue={branchOptions[0]}
           placeholder="Select a branch"
           onCreate={onCreateBranch}
           onChange={(id) => setBranchId(id)}
@@ -98,8 +99,10 @@ const ConfirmationDialog = ({
             <SelectItem value="Bank">Bank</SelectItem>
           </SelectContent>
         </ShadcnSelect>
-        <DialogFooter>
-          <Button onClick={handleCancel}>Cancel</Button>
+        <DialogFooter className="gap-2">
+          <Button onClick={handleCancel} variant="outline">
+            Cancel
+          </Button>
           <Button onClick={handleConfirm}>Confirm</Button>
         </DialogFooter>
       </DialogContent>
