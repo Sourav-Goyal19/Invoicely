@@ -18,6 +18,9 @@ import { useConfirm } from "@/hooks/use-confirm";
 
 const formFields = insertBranchSchema.pick({
   name: true,
+  address: true,
+  phone: true,
+  gstNo: true,
 });
 
 type FormValues = z.input<typeof formFields>;
@@ -60,6 +63,9 @@ const EditBranchSheet = () => {
 
   const defaultValues = branchQuery.data && {
     name: branchQuery.data?.name,
+    address: branchQuery.data?.address,
+    phone: branchQuery.data?.phone,
+    gstNo: branchQuery.data?.gstNo,
   };
 
   return (

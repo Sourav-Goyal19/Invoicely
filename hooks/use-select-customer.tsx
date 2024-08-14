@@ -5,7 +5,7 @@ import { Select } from "@/components/select";
 import { useCreateBranch } from "@/features/branches/api/use-create-branch";
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { use, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select as ShadcnSelect,
@@ -14,19 +14,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePicker } from "@/components/date-picker";
 
 interface CustomerDetails {
   customerName?: string;
   branchId?: string;
   GST?: number;
   paymentType?: string;
+  date?: Date;
 }
 
 interface ConfirmationDialogProps {
   open: boolean;
   onConfirm: (customerDetails: CustomerDetails) => void;
   onCancel: () => void;
-  onCreateBranch: (name: string) => void;
   branchOptions: { value: string; label: string }[];
   isLoading: boolean;
 }
@@ -35,19 +36,23 @@ const ConfirmationDialog = ({
   open,
   onConfirm,
   onCancel,
-  onCreateBranch,
   branchOptions,
   isLoading,
 }: ConfirmationDialogProps) => {
   const [customerName, setCustomerName] = useState<string | undefined>(
     undefined
   );
-  const [branchId, setBranchId] = useState<string | undefined>(undefined);
+  const [branchId, setBranchId] = useState<string | undefined>(
+    branchOptions[0]?.value
+  );
   const [GST, setGST] = useState<number | undefined>(undefined);
   const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
 
   const handleConfirm = () => {
-    onConfirm({ customerName, branchId, GST, paymentType });
+    onConfirm({ customerName, branchId, GST, paymentType, date: selectedDate });
   };
 
   const handleCancel = () => {
@@ -61,12 +66,24 @@ const ConfirmationDialog = ({
           placeholder="Enter customer name"
           onChange={(e) => setCustomerName(e.target.value)}
         />
-        <Select
-          options={branchOptions}
-          placeholder="Select a branch"
-          onCreate={onCreateBranch}
-          onChange={(id) => setBranchId(id)}
-          disabled={isLoading}
+        <ShadcnSelect
+          onValueChange={(value) => setBranchId(value)}
+          defaultValue={branchId}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select branch" />
+          </SelectTrigger>
+          <SelectContent>
+            {branchOptions.map((branch) => (
+              <SelectItem key={branch.value} value={branch.value}>
+                {branch.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </ShadcnSelect>
+        <DatePicker
+          value={selectedDate}
+          onChange={(date) => setSelectedDate(date)}
         />
         <Input
           placeholder="Enter GST Amount"
@@ -83,7 +100,9 @@ const ConfirmationDialog = ({
           </SelectContent>
         </ShadcnSelect>
         <DialogFooter>
-          <Button onClick={handleCancel}>Cancel</Button>
+          <Button variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
           <Button onClick={handleConfirm}>Confirm</Button>
         </DialogFooter>
       </DialogContent>
@@ -108,10 +127,6 @@ export const useSelectCustomer = (): [
     label: branch.name,
   }));
 
-  const onCreateBranch = (name: string) => {
-    branchMutation.mutate({ name });
-  };
-
   const confirm = () =>
     new Promise<CustomerDetails>((resolve, reject) => {
       setPromise({ resolve });
@@ -123,6 +138,7 @@ export const useSelectCustomer = (): [
       branchId: undefined,
       GST: undefined,
       paymentType: undefined,
+      date: undefined,
     });
     setPromise(null);
   };
@@ -135,7 +151,6 @@ export const useSelectCustomer = (): [
         handleClose();
       }}
       onCancel={handleClose}
-      onCreateBranch={onCreateBranch}
       branchOptions={branchOptions}
       isLoading={branchMutation.isPending || branchQuery.isLoading}
     />

@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import { Select } from "@/components/select";
 import { useCreateBranch } from "@/features/branches/api/use-create-branch";
 import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { useSession } from "next-auth/react";
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { useGetCategories } from "@/features/categories/api/use-get-categories";
 import { SelectCategories } from "@/components/multiple-category";
+import { DatePicker } from "@/components/date-picker";
 
 interface PurchaseDetails {
   branchId?: string;
@@ -23,13 +23,13 @@ interface PurchaseDetails {
   totalAmount?: number;
   paymentType?: string;
   categoryIds?: string[];
+  date?: Date;
 }
 
 interface ConfirmationDialogProps {
   open: boolean;
   onConfirm: (purchaseDetails: PurchaseDetails) => void;
   onCancel: () => void;
-  onCreateBranch: (name: string) => void;
   branchOptions: { value: string; label: string }[];
   categoryOptions: { value: string; label: string }[];
   isLoading: boolean;
@@ -39,19 +39,30 @@ const ConfirmationDialog = ({
   open,
   onConfirm,
   onCancel,
-  onCreateBranch,
   branchOptions,
   categoryOptions,
   isLoading,
 }: ConfirmationDialogProps) => {
-  const [branchId, setBranchId] = useState<string | undefined>(undefined);
+  const [branchId, setBranchId] = useState<string | undefined>(
+    branchOptions[0]?.value
+  );
   const [GST, setGST] = useState<number | undefined>(undefined);
   const [totalAmount, setTotalAmount] = useState<number | undefined>(undefined);
   const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [selecteddate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
 
   const handleConfirm = () => {
-    onConfirm({ branchId, GST, paymentType, categoryIds, totalAmount });
+    onConfirm({
+      branchId,
+      GST,
+      paymentType,
+      categoryIds,
+      totalAmount,
+      date: selecteddate,
+    });
   };
 
   const handleCancel = () => {
@@ -61,13 +72,24 @@ const ConfirmationDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
       <DialogContent>
-        <Select
-          options={branchOptions}
-          defaultValue={branchOptions[0]}
-          placeholder="Select a branch"
-          onCreate={onCreateBranch}
-          onChange={(id) => setBranchId(id)}
-          disabled={isLoading}
+        <ShadcnSelect onValueChange={setBranchId} defaultValue={branchId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select Branch" />
+          </SelectTrigger>
+          <SelectContent>
+            {branchOptions.map((branch) => (
+              <SelectItem key={branch.value} value={branch.value}>
+                {branch.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </ShadcnSelect>
+        <DatePicker
+          onChange={(date) => {
+            console.log(date);
+            setSelectedDate(date);
+          }}
+          value={selecteddate}
         />
         <SelectCategories
           categoryOptions={categoryOptions}
@@ -134,10 +156,6 @@ export const useSelectPurchase = (): [
     label: branch.name,
   }));
 
-  const onCreateBranch = (name: string) => {
-    branchMutation.mutate({ name });
-  };
-
   const confirm = () =>
     new Promise<PurchaseDetails>((resolve, reject) => {
       setPromise({ resolve });
@@ -149,6 +167,7 @@ export const useSelectPurchase = (): [
       GST: undefined,
       paymentType: undefined,
       categoryIds: [],
+      date: undefined,
     });
     setPromise(null);
   };
@@ -161,7 +180,6 @@ export const useSelectPurchase = (): [
         handleClose();
       }}
       onCancel={handleClose}
-      onCreateBranch={onCreateBranch}
       branchOptions={branchOptions}
       categoryOptions={categoryOptions}
       isLoading={

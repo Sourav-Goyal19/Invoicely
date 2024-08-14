@@ -16,6 +16,9 @@ import { z } from "zod";
 
 const formFields = insertBranchSchema.pick({
   name: true,
+  address: true,
+  phone: true,
+  gstNo: true,
 });
 
 type FormValues = z.input<typeof formFields>;
@@ -36,7 +39,12 @@ export const BranchForm: React.FC<BranchFormProps> = ({
   disabled,
 }) => {
   const form = useForm<FormValues>({
-    defaultValues: defaultValues || { name: "" },
+    defaultValues: defaultValues || {
+      name: "",
+      address: "",
+      phone: "",
+      gstNo: "",
+    },
     resolver: zodResolver(formFields),
   });
 
@@ -67,6 +75,60 @@ export const BranchForm: React.FC<BranchFormProps> = ({
                     placeholder="e.g. Cash, Bank, Credit Card"
                     disabled={disabled}
                     {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Address</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Business Address......."
+                    disabled={disabled}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mobile Number</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Add a Mobile Number......."
+                    disabled={disabled}
+                    {...field}
+                    type="tel"
+                    pattern="[0-9]{10}"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gstNo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>GST Number</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Add Your GST Number......."
+                    disabled={disabled}
+                    {...field}
+                    value={field.value || ""}
                   />
                 </FormControl>
                 <FormMessage />

@@ -78,10 +78,10 @@ export function DataTable<TData, TValue>({
     branchId: string,
     GST: number,
     paymentType: string,
-    transactions: transactionType[]
+    transactions: transactionType[],
+    date: Date
   ) => {
     setIsLoading(true);
-    console.log(customerName, branchId, GST, paymentType, transactions);
     customerPdfMutation.mutate(
       {
         customerName,
@@ -89,11 +89,11 @@ export function DataTable<TData, TValue>({
         GST,
         paymentType,
         transactions,
+        date,
       },
       {
         onSuccess: (data) => {
           setIsLoading(false);
-          console.log(data);
           const url = URL.createObjectURL(data);
           const link = document.createElement("a");
           link.href = url;
@@ -165,7 +165,7 @@ export function DataTable<TData, TValue>({
               <Button
                 size="sm"
                 onClick={async () => {
-                  const { customerName, branchId, GST, paymentType } =
+                  const { customerName, branchId, GST, paymentType, date } =
                     await customerConfirm();
                   if (!customerName) {
                     return toast.error("Customer name is required");
@@ -179,6 +179,11 @@ export function DataTable<TData, TValue>({
                   if (!paymentType) {
                     return toast.error("Payment Type is required");
                   }
+
+                  if (!date) {
+                    return toast.error("Date is required");
+                  }
+
                   const transactions = table
                     .getSelectedRowModel()
                     .rows.map((row) => ({
@@ -193,7 +198,8 @@ export function DataTable<TData, TValue>({
                     branchId,
                     GST,
                     paymentType,
-                    transactions
+                    transactions,
+                    date
                   );
                 }}
               >

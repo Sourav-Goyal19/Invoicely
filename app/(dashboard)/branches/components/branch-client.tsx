@@ -10,16 +10,18 @@ import { useGetBranches } from "@/features/branches/api/use-get-branches";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "next-auth/react";
 import { useBulkDeleteBranches } from "@/features/branches/api/use-bulk-delete-branches";
+import React, { Suspense } from "react";
 
 const BranchesPageClient = () => {
   const { onOpen } = useNewBranch();
   const { data: authdata } = useSession();
+
   const branchQuery = useGetBranches(authdata?.user?.email!);
   const deleteBranches = useBulkDeleteBranches(authdata?.user?.email!);
 
   const isDisabled = branchQuery.isLoading || deleteBranches.isPending;
 
-  if (branchQuery.isLoading) {
+  const BranchClientFallback = () => {
     return (
       <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
         <Card className="border-none drop-shadow-sm">
@@ -34,37 +36,40 @@ const BranchesPageClient = () => {
         </Card>
       </div>
     );
-  }
+  };
 
   const data: ResponseType[] = branchQuery.data || [];
+
   return (
-    <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
-      <Card className="border-none drop-shadow-sm">
-        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-xl line-clamp-1">Branches</CardTitle>
-          <Button onClick={onOpen} size={"sm"}>
-            <Plus className="size-4 mr-2" />
-            Add New
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <DataTable
-            columns={columns}
-            data={data}
-            filterKey="name"
-            onDelete={(rows) => {
-              const ids = rows.map((r) => r.original.id);
-              const deleted = deleteBranches.mutate({
-                ids,
-              });
-              console.log(deleted);
-            }}
-            disabled={isDisabled}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <Suspense fallback={<BranchClientFallback />}>
+      <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
+        <Card className="border-none drop-shadow-sm">
+          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+            <CardTitle className="text-xl line-clamp-1">Branches</CardTitle>
+            <Button onClick={onOpen} size={"sm"}>
+              <Plus className="size-4 mr-2" />
+              Add New
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={columns}
+              data={data}
+              filterKey="name"
+              onDelete={(rows) => {
+                const ids = rows.map((r) => r.original.id);
+                const deleted = deleteBranches.mutate({
+                  ids,
+                });
+                console.log(deleted);
+              }}
+              disabled={isDisabled}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </Suspense>
   );
 };
 
-export default BranchesPageClient;
+export default React.memo(BranchesPageClient);

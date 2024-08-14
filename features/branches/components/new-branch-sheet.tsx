@@ -14,6 +14,9 @@ import { useSession } from "next-auth/react";
 
 const formFields = insertBranchSchema.pick({
   name: true,
+  address: true,
+  phone: true,
+  gstNo: true,
 });
 
 type FormValues = z.input<typeof formFields>;
@@ -27,6 +30,9 @@ const NewBranchSheet = () => {
     mutation.mutate(
       {
         name: data.name,
+        address: data.address,
+        phone: data.phone,
+        gstNo: data.gstNo,
       },
       {
         onSuccess: () => {

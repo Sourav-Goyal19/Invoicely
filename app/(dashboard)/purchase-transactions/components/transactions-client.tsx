@@ -78,7 +78,8 @@ const TransactionsPageClient = () => {
     GST: number,
     paymentType: string,
     categoryIds: string[],
-    totalAmount: number
+    totalAmount: number,
+    date: Date
   ) => {
     setIsLoading(true);
     purchasePdfMutation.mutate(
@@ -88,6 +89,7 @@ const TransactionsPageClient = () => {
         paymentType,
         categoryIds,
         totalAmount,
+        date,
       },
       {
         onSuccess: (data) => {
@@ -182,6 +184,7 @@ const TransactionsPageClient = () => {
                     paymentType,
                     categoryIds,
                     totalAmount,
+                    date,
                   } = await purchaseConfirm();
                   if (!branchId) {
                     return toast.error("Branch Name is required");
@@ -201,12 +204,17 @@ const TransactionsPageClient = () => {
                     return toast.error("Total Amount should be greater than 0");
                   }
 
+                  if (!date) {
+                    return toast.error("Date is required");
+                  }
+
                   handlePurchasePdf(
                     branchId,
                     GST,
                     paymentType,
                     categoryIds,
-                    totalAmount
+                    totalAmount,
+                    date
                   );
                 }}
               >

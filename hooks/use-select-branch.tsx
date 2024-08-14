@@ -1,4 +1,11 @@
-import { Select } from "@/components/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,11 +32,7 @@ export const useSelectBranch = (): [
   const { data } = useSession();
 
   const branchQuery = useGetBranches(data?.user?.email!);
-  const branchMutation = useCreateBranch(data?.user?.email!);
 
-  const onCreateBranch = (name: string) => {
-    branchMutation.mutate({ name });
-  };
   const branchOptions = (branchQuery.data || []).map((branch) => ({
     value: branch.id,
     label: branch.name,
@@ -63,15 +66,23 @@ export const useSelectBranch = (): [
             Please select branch to continue
           </DialogDescription>
         </DialogHeader>
-        <Select
-          options={branchOptions}
-          placeholder="Select an branch"
-          onCreate={onCreateBranch}
-          onChange={(branchId) => {
-            selectValue.current = branchId;
-          }}
-          disabled={branchMutation.isPending || branchQuery.isLoading}
-        />
+        <Select onValueChange={(value) => (selectValue.current = value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a branch" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectLabel>Branch</SelectLabel>
+            {branchOptions.map((option) => (
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                onClick={() => (selectValue.current = option.value)}
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <DialogFooter className="pt-2 gap-2 ">
           <Button variant="outline" onClick={handleCancel}>
             Cancel

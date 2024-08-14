@@ -51,6 +51,18 @@ export const columns: ColumnDef<ResponseType>[] = [
     },
   },
   {
+    accessorKey: "phone",
+    header: "Phone",
+  },
+  {
+    accessorKey: "address",
+    header: "Address",
+  },
+  {
+    accessorKey: "gstNo",
+    header: "GST No",
+  },
+  {
     id: "actions",
     cell: ({ row }) => <Actions id={row.original.id} />,
   },

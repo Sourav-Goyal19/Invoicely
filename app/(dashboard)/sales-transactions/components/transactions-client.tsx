@@ -20,8 +20,6 @@ import ImportCard from "./import-card";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useBulkCreateSalesTransactions } from "@/features/sales-transactions/api/use-bulk-create-sales-transactions";
-import { useCreatePurchasePdf } from "@/features/purchase-transactions/api/use-create-purchase-pdf";
-import { useSelectPurchase } from "@/hooks/use-select-purchase";
 import LoadingModal from "@/components/ui/loading-modal";
 
 type VARIANT = "LIST" | "IMPORT";
@@ -39,11 +37,12 @@ const CsvFormFields = insertSalesTransactionsSchema.omit({
 
 type CsvFormValues = z.input<typeof CsvFormFields>;
 
-const TransactionsPageClient = () => {
+const SalesTransactionsPageClient = () => {
   const { data: authdata } = useSession();
 
   const [variant, setVariant] = useState<VARIANT>("LIST");
   const [importResults, setImportResults] = useState(INITIAL_IMPORT_RESULTS);
+
   const { onOpen } = useNewTransaction();
 
   const TransactionQuery = useGetSalesTransactions(authdata?.user?.email!);
@@ -148,7 +147,6 @@ const TransactionsPageClient = () => {
                 const deleted = deletetransactions.mutate({
                   ids,
                 });
-                console.log(deleted);
               }}
               disabled={isDisabled}
             />
@@ -159,4 +157,4 @@ const TransactionsPageClient = () => {
   );
 };
 
-export default TransactionsPageClient;
+export default SalesTransactionsPageClient;

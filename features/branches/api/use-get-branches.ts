@@ -13,7 +13,8 @@ export const useGetBranches = (email: string) => {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to fetch branches");
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to fetch branches");
       }
       const { data } = await res.json();
       return data;

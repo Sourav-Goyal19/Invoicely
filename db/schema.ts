@@ -13,7 +13,7 @@ import { z } from "zod";
 
 export const usersTable = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  name: text("name"),
+  name: text("name").notNull(),
   email: text("email").notNull().unique(),
   image: text("image"),
   password: varchar("password", { length: 255 }),
@@ -37,6 +37,9 @@ export const branchesTable = pgTable("branches", {
     })
     .notNull(),
   name: text("name").notNull(),
+  address: text("address").notNull(),
+  phone: text("phone").notNull(),
+  gstNo: text("gst_no"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -91,7 +94,7 @@ export const purchaseTransactionsTable = pgTable("purchase_transactions", {
     .notNull(),
 });
 
-export const transactionsRelations = relations(
+export const purchaseTransactionsRelations = relations(
   purchaseTransactionsTable,
   ({ one }) => ({
     user: one(usersTable, {
@@ -150,3 +153,64 @@ export const insertSalesTransactionsSchema = createInsertSchema(
     total: z.coerce.number().multipleOf(0.01),
   }
 );
+
+export const invoiceItemTable = pgTable("invoice_item", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  invoiceNumber: integer("invoice_number").default(0).notNull(),
+  date: timestamp("date", { mode: "date" }).notNull(),
+  userId: uuid("user_id").references(() => usersTable.id, {
+    onDelete: "cascade",
+  }),
+  invoiceId: uuid("invoice_id").references(() => invoiceTable.id),
+  total: text("total"),
+  branchId: uuid("branch_id")
+    .references(() => branchesTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+});
+
+export const invoiceItemRelations = relations(invoiceItemTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [invoiceItemTable.userId],
+    references: [usersTable.id],
+  }),
+  branch: one(branchesTable, {
+    fields: [invoiceItemTable.branchId],
+    references: [branchesTable.id],
+  }),
+  invoice: one(invoiceTable, {
+    fields: [invoiceItemTable.invoiceId],
+    references: [invoiceTable.id],
+  }),
+}));
+
+export const insertInvoiceItemSchema = createInsertSchema(invoiceItemTable);
+
+export const invoiceTable = pgTable("invoice", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  lastInvoiceNumber: integer("last_invoice_number").default(0).notNull(),
+  userId: uuid("user_id")
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  branchId: uuid("branch_id")
+    .references(() => branchesTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  invoiceItemIds: uuid("invoice_item_ids").array(),
+});
+
+export const invoiceRelations = relations(invoiceTable, ({ one, many }) => ({
+  user: one(usersTable, {
+    fields: [invoiceTable.userId],
+    references: [usersTable.id],
+  }),
+  branch: one(branchesTable, {
+    fields: [invoiceTable.branchId],
+    references: [branchesTable.id],
+  }),
+  invoiceItems: many(invoiceItemTable),
+}));

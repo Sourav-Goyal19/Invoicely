@@ -1,5 +1,5 @@
 {
-  "id": "a22c3660-b5ba-48b4-91d2-2655f7a7a45c",
+  "id": "c2e0464b-0e73-487c-bfbb-aa13a0dc7928",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -26,6 +26,24 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gst_no": {
+          "name": "gst_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -61,8 +79,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.transactions": {
-      "name": "transactions",
+    "public.categories": {
+      "name": "categories",
       "schema": "",
       "columns": {
         "id": {
@@ -72,8 +90,228 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "amount": {
-          "name": "amount",
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "categories_user_id_users_id_fk": {
+          "name": "categories_user_id_users_id_fk",
+          "tableFrom": "categories",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.invoice_item": {
+      "name": "invoice_item",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "invoice_number": {
+          "name": "invoice_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invoice_id": {
+          "name": "invoice_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total": {
+          "name": "total",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "invoice_item_user_id_users_id_fk": {
+          "name": "invoice_item_user_id_users_id_fk",
+          "tableFrom": "invoice_item",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invoice_item_invoice_id_invoice_id_fk": {
+          "name": "invoice_item_invoice_id_invoice_id_fk",
+          "tableFrom": "invoice_item",
+          "tableTo": "invoice",
+          "columnsFrom": [
+            "invoice_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "invoice_item_branch_id_branches_id_fk": {
+          "name": "invoice_item_branch_id_branches_id_fk",
+          "tableFrom": "invoice_item",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.invoice": {
+      "name": "invoice",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "last_invoice_number": {
+          "name": "last_invoice_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_item_ids": {
+          "name": "invoice_item_ids",
+          "type": "uuid[]",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "invoice_user_id_users_id_fk": {
+          "name": "invoice_user_id_users_id_fk",
+          "tableFrom": "invoice",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invoice_branch_id_branches_id_fk": {
+          "name": "invoice_branch_id_branches_id_fk",
+          "tableFrom": "invoice",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.purchase_transactions": {
+      "name": "purchase_transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "price": {
+          "name": "price",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -88,43 +326,13 @@
           "name": "quantity",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": 1
-        },
-        "cgst_percent": {
-          "name": "cgst_percent",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "sgst_percent": {
-          "name": "sgst_percent",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "cgst_amount": {
-          "name": "cgst_amount",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "sgst_amount": {
-          "name": "sgst_amount",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
+          "notNull": true
         },
         "total": {
           "name": "total",
-          "type": "integer",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
-          "notNull": true,
-          "default": 0
+          "notNull": true
         },
         "date": {
           "name": "date",
@@ -132,11 +340,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "branch_id": {
-          "name": "branch_id",
+        "category_id": {
+          "name": "category_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "user_id": {
           "name": "user_id",
@@ -147,22 +355,108 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "transactions_branch_id_branches_id_fk": {
-          "name": "transactions_branch_id_branches_id_fk",
-          "tableFrom": "transactions",
-          "tableTo": "branches",
+        "purchase_transactions_category_id_categories_id_fk": {
+          "name": "purchase_transactions_category_id_categories_id_fk",
+          "tableFrom": "purchase_transactions",
+          "tableTo": "categories",
           "columnsFrom": [
-            "branch_id"
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "purchase_transactions_user_id_users_id_fk": {
+          "name": "purchase_transactions_user_id_users_id_fk",
+          "tableFrom": "purchase_transactions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.sales_transactions": {
+      "name": "sales_transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
-        "transactions_user_id_users_id_fk": {
-          "name": "transactions_user_id_users_id_fk",
-          "tableFrom": "transactions",
+        "price": {
+          "name": "price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product": {
+          "name": "product",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "name": "total",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sales_transactions_category_id_categories_id_fk": {
+          "name": "sales_transactions_category_id_categories_id_fk",
+          "tableFrom": "sales_transactions",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sales_transactions_user_id_users_id_fk": {
+          "name": "sales_transactions_user_id_users_id_fk",
+          "tableFrom": "sales_transactions",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -192,7 +486,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "email": {
           "name": "email",

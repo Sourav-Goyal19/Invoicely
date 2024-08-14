@@ -4,7 +4,12 @@ import { db } from "@/db/drizzle";
 import { and, eq, inArray } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { validate as validateUUId } from "uuid";
-import { branchesTable, insertBranchSchema, usersTable } from "@/db/schema";
+import {
+  branchesTable,
+  insertBranchSchema,
+  invoiceTable,
+  usersTable,
+} from "@/db/schema";
 
 const app = new Hono()
   .get(
@@ -30,9 +35,16 @@ const app = new Hono()
         .select({
           id: branchesTable.id,
           name: branchesTable.name,
+          address: branchesTable.address,
+          phone: branchesTable.phone,
+          gstNo: branchesTable.gstNo,
         })
         .from(branchesTable)
         .where(eq(branchesTable.userId, user.id));
+
+      if (data.length <= 0) {
+        return ctx.json({ error: "Branches Not Found" }, 404);
+      }
 
       return ctx.json({ data }, 200);
     }
@@ -73,6 +85,9 @@ const app = new Hono()
         .select({
           id: branchesTable.id,
           name: branchesTable.name,
+          address: branchesTable.address,
+          phone: branchesTable.phone,
+          gstNo: branchesTable.gstNo,
         })
         .from(branchesTable)
         .where(
@@ -98,10 +113,13 @@ const app = new Hono()
       "json",
       insertBranchSchema.pick({
         name: true,
+        address: true,
+        phone: true,
+        gstNo: true,
       })
     ),
     async (c) => {
-      const { name } = c.req.valid("json");
+      const { name, address, phone, gstNo } = c.req.valid("json");
       const email = c.req.valid("param").email;
 
       const [user] = await db
@@ -117,13 +135,30 @@ const app = new Hono()
         return c.json({ error: "Name is required" }, 400);
       }
 
+      if (!address) {
+        return c.json({ error: "Address is required" }, 400);
+      }
+
+      if (!phone) {
+        return c.json({ error: "Phone Number is required" }, 400);
+      }
+
       const [data] = await db
         .insert(branchesTable)
         .values({
           name,
           userId: user.id,
+          address,
+          phone,
+          gstNo,
         })
         .returning();
+
+      await db.insert(invoiceTable).values({
+        userId: user.id,
+        branchId: data.id,
+        lastInvoiceNumber: 0,
+      });
 
       return c.json({ data }, 201);
     }
@@ -179,12 +214,18 @@ const app = new Hono()
       "json",
       insertBranchSchema.pick({
         name: true,
+        address: true,
+        phone: true,
+        gstNo: true,
       })
     ),
     async (c) => {
       const id = c.req.valid("param").id;
       const email = c.req.valid("param").email;
       const name = c.req.valid("json").name;
+      const address = c.req.valid("json").address;
+      const phone = c.req.valid("json").phone;
+      const gstNo = c.req.valid("json").gstNo;
 
       if (!id) {
         return c.json({ error: "branch id is required" }, 400);
@@ -196,6 +237,14 @@ const app = new Hono()
 
       if (!name) {
         return c.json({ error: "Name is required" }, 400);
+      }
+
+      if (!address) {
+        return c.json({ error: "Address is required" }, 400);
+      }
+
+      if (!phone) {
+        return c.json({ error: "Phone Number is required" }, 400);
       }
 
       const [user] = await db
@@ -211,6 +260,9 @@ const app = new Hono()
         .update(branchesTable)
         .set({
           name,
+          address,
+          phone,
+          gstNo,
         })
         .where(and(eq(branchesTable.userId, user.id), eq(branchesTable.id, id)))
         .returning();

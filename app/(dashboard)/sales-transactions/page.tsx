@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
-import TransactionsPageClient from "./components/transactions-client";
+import SalesTransactionsPageClient from "./components/transactions-client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,15 +11,15 @@ export const metadata: Metadata = {
     "Easily manage your financial transactions with FinFlow. Create, edit, and view transactions with custom branches and categories. Sort, search, and paginate through your financial history effortlessly.",
 };
 
-const TransactionsPage = () => {
+const SalesTransactionsPage = () => {
   return (
-    <Suspense fallback={<TransactionsPageFallback />}>
-      <TransactionsPageClient />
+    <Suspense fallback={<SalesTransactionsPageFallback />}>
+      <SalesTransactionsPageClient />
     </Suspense>
   );
 };
 
-const TransactionsPageFallback = () => {
+const SalesTransactionsPageFallback = () => {
   return (
     <div className="max-w-screen-2xl mx-auto w-full -mt-24 pb-10">
       <Card className="border-none drop-shadow-sm">
@@ -36,4 +36,4 @@ const TransactionsPageFallback = () => {
   );
 };
 
-export default TransactionsPage;
+export default SalesTransactionsPage;

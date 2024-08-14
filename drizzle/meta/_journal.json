@@ -5,64 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1722844908099,
-      "tag": "0000_handy_hellfire_club",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1722848218792,
-      "tag": "0001_closed_joseph",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1722869946491,
-      "tag": "0002_strong_carnage",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1722881727387,
-      "tag": "0003_flippant_lady_ursula",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1723054316132,
-      "tag": "0004_chunky_alice",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1723092565574,
-      "tag": "0005_fantastic_leper_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1723199005461,
-      "tag": "0006_late_old_lace",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1723454959069,
-      "tag": "0007_mysterious_lilith",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1723457619729,
-      "tag": "0008_married_living_tribunal",
+      "when": 1723636217655,
+      "tag": "0000_famous_diamondback",
       "breakpoints": true
     }
   ]

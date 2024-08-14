@@ -2,7 +2,10 @@ import {
   branchesTable,
   categoriesTable,
   insertPurchaseTransactionsSchema,
+  invoiceItemTable,
+  invoiceTable,
   purchaseTransactionsTable,
+  usersTable,
 } from "@/db/schema";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
@@ -11,6 +14,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { db } from "@/db/drizzle";
 import { and, eq, inArray, lte } from "drizzle-orm";
+import { format } from "date-fns";
 
 const transactionSchema = insertPurchaseTransactionsSchema.omit({
   userId: true,
@@ -54,6 +58,7 @@ const app = new Hono()
             id: true,
           })
         ),
+        date: z.coerce.date(),
       })
     ),
     async (c) => {
@@ -76,13 +81,18 @@ const app = new Hono()
       }
       const branchName = branch.name;
       const GST = values.GST;
+      const formattedDate = format(values.date, "dd/MM/yyyy");
 
       const pdfBuffer = generatePDFforCustomer(
         customerName,
         branchName,
         paymentType,
         GST,
-        values.transactions
+        values.transactions,
+        branch.address,
+        branch.phone,
+        branch.gstNo,
+        formattedDate
       );
 
       const pdfArrayBuffer = await pdfBuffer.arrayBuffer();
@@ -112,6 +122,7 @@ const app = new Hono()
         paymentType: z.string().min(1, "Payment Type is required"),
         categoryIds: z.array(z.string().uuid("Invalid category Id")),
         totalAmount: z.coerce.number(),
+        date: z.coerce.date(),
       })
     ),
     async (c) => {
@@ -119,6 +130,15 @@ const app = new Hono()
       const paymentType = values.paymentType;
       const categoryIds = values.categoryIds;
       const totalAmount = values.totalAmount;
+      const email = c.req.valid("param").email;
+      const date = values.date;
+
+      const [user] = await db
+        .select({
+          id: usersTable.id,
+        })
+        .from(usersTable)
+        .where(eq(usersTable.email, email));
 
       const [branch] = await db
         .select()
@@ -175,6 +195,32 @@ const app = new Hono()
           .where(eq(purchaseTransactionsTable.id, transactiontoUpdate.id));
       });
 
+      const [invoice] = await db
+        .select()
+        .from(invoiceTable)
+        .where(eq(invoiceTable.branchId, branch.id));
+
+      const [newInvoiceItem] = await db
+        .insert(invoiceItemTable)
+        .values({
+          invoiceId: invoice.id,
+          date: date,
+          invoiceNumber: invoice.lastInvoiceNumber + 1,
+          total: totalAmount.toString(),
+          userId: user.id,
+          branchId: branch.id,
+        })
+        .returning();
+
+      if (!newInvoiceItem) {
+        return c.json({ error: "Error creating invoice" }, 500);
+      }
+
+      await db.update(invoiceTable).set({
+        lastInvoiceNumber: invoice.lastInvoiceNumber + 1,
+      });
+
+      const formattedDate = format(date, "dd/MM/yyyy");
       const branchName = branch.name;
       const GST = values.GST;
 
@@ -189,7 +235,12 @@ const app = new Hono()
         branchName,
         paymentType,
         GST,
-        formattedFinalTransactions
+        formattedFinalTransactions,
+        branch.address,
+        branch.phone,
+        branch.gstNo,
+        formattedDate,
+        newInvoiceItem.invoiceNumber
       );
 
       const pdfArrayBuffer = await pdfBuffer.arrayBuffer();
@@ -258,7 +309,12 @@ const generatePDFforPurchase = (
   branchName: string,
   paymentType: string,
   GSTPercent: number,
-  transactions: transactionType[]
+  transactions: transactionType[],
+  address: string,
+  mobileNumber: string,
+  gst_no: string | null,
+  date?: string,
+  invoiceNumber?: number
 ): Blob => {
   const doc = new jsPDF();
 
@@ -288,8 +344,8 @@ const generatePDFforPurchase = (
     );
 
     doc.setFontSize(12);
-    doc.text("GSTIN: 07AJVPA2735N1ZS", 10, 40);
-    doc.text("Mobile: 9871166715", 160, 40);
+    doc.text(`GSTIN: ${gst_no}`, 10, 40);
+    doc.text(`Mobile: ${mobileNumber}`, 160, 40);
 
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
@@ -297,12 +353,7 @@ const generatePDFforPurchase = (
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(
-      "490/1, Gurudwara Road, Kotla Mubarakpur, New Delhi - 110003",
-      105,
-      60,
-      { align: "center" }
-    );
+    doc.text(address, 105, 60, { align: "center" });
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
@@ -320,8 +371,8 @@ const generatePDFforPurchase = (
       85
     );
 
-    doc.text("Invoice No.:", 150, 75);
-    doc.text("Date .............................", 150, 85);
+    doc.text(`Invoice No.: ${invoiceNumber}`, 150, 75);
+    doc.text(`Date .......${date ? date : ".............."}........`, 150, 85);
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
@@ -436,7 +487,11 @@ const generatePDFforCustomer = (
   branchName: string,
   paymentType: string,
   GSTPercent: number,
-  transactions: transactionType[]
+  transactions: transactionType[],
+  address: string,
+  mobileNumber: string,
+  gst_no: string | null,
+  date?: string
 ): Blob => {
   const doc = new jsPDF();
 
@@ -466,8 +521,8 @@ const generatePDFforCustomer = (
     );
 
     doc.setFontSize(12);
-    doc.text("GSTIN: 07AJVPA2735N1ZS", 10, 40);
-    doc.text("Mobile: 9871166715", 160, 40);
+    doc.text(`GSTIN: ${gst_no}`, 10, 40);
+    doc.text(`Mobile: ${mobileNumber}`, 160, 40);
 
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
@@ -475,12 +530,7 @@ const generatePDFforCustomer = (
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(
-      "490/1, Gurudwara Road, Kotla Mubarakpur, New Delhi - 110003",
-      105,
-      60,
-      { align: "center" }
-    );
+    doc.text(address, 105, 60, { align: "center" });
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
@@ -498,8 +548,8 @@ const generatePDFforCustomer = (
       85
     );
 
-    doc.text("Invoice No.:", 150, 75);
-    doc.text("Date .............................", 150, 85);
+    doc.text(`Invoice No.:`, 150, 75);
+    doc.text(`Date .......${date ? date : ".............."}........`, 150, 85);
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
