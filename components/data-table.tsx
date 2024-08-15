@@ -39,7 +39,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterKey: string;
-  onDelete: (rows: Row<TData>[]) => void;
+  onDelete?: (rows: Row<TData>[]) => void;
   disabled?: boolean;
 }
 
@@ -135,7 +135,7 @@ export function DataTable<TData, TValue>({
       {isLoading && <LoadingModal />}
       <ConfirmDialog />
       <CustomerForm />
-      <div className="flex items-center py-4 gap-4">
+      <div className="flex flex-col md:flex-row items-center py-4 gap-4">
         <Input
           placeholder={`Filter ${filterKey}......`}
           value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
@@ -145,14 +145,14 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
         {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <div className="flex ml-auto font-normal text-sm gap-3">
+          <div className="flex flex-col w-full md:w-fit md:flex-row ml-0 md:ml-auto font-normal text-sm gap-3">
             <Button
               disabled={disabled}
               variant="outline"
               onClick={async () => {
                 const ok = await confirm();
                 if (ok) {
-                  onDelete(table.getFilteredSelectedRowModel().rows);
+                  onDelete?.(table.getFilteredSelectedRowModel().rows);
                   table.resetRowSelection();
                 }
               }}

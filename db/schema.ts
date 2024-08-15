@@ -158,11 +158,15 @@ export const invoiceItemTable = pgTable("invoice_item", {
   id: uuid("id").defaultRandom().primaryKey(),
   invoiceNumber: integer("invoice_number").default(0).notNull(),
   date: timestamp("date", { mode: "date" }).notNull(),
-  userId: uuid("user_id").references(() => usersTable.id, {
-    onDelete: "cascade",
-  }),
-  invoiceId: uuid("invoice_id").references(() => invoiceTable.id),
-  total: text("total"),
+  userId: uuid("user_id")
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  invoiceId: uuid("invoice_id")
+    .references(() => invoiceTable.id)
+    .notNull(),
+  total: text("total").default("0").notNull(),
   branchId: uuid("branch_id")
     .references(() => branchesTable.id, {
       onDelete: "cascade",

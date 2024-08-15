@@ -8,6 +8,7 @@ import SalesTransactionsRouter from "./sales-transactions";
 import SummaryRouter from "./summary";
 import PdfRouter from "./pdf";
 import CategoryRouter from "./categories";
+import InvoiceRouter from "./invoice";
 
 export const runtime = "edge";
 
@@ -26,7 +27,8 @@ const routes = app
   .route("/:email/categories", CategoryRouter)
   .route("/:email/purchase-transactions", PurchaseTransactionsRouter)
   .route("/:email/sales-transactions", SalesTransactionsRouter)
-  .route("/:email/pdf", PdfRouter);
+  .route("/:email/pdf", PdfRouter)
+  .route("/:email/invoice", InvoiceRouter);
 
 export const GET = handle(app);
 export const POST = handle(app);

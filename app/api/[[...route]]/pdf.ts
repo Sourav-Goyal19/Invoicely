@@ -166,7 +166,12 @@ const app = new Hono()
       const transactions = await db
         .select()
         .from(purchaseTransactionsTable)
-        .where(and(inArray(purchaseTransactionsTable.categoryId, categoryIds)));
+        .where(
+          and(
+            inArray(purchaseTransactionsTable.categoryId, categoryIds),
+            eq(purchaseTransactionsTable.userId, user.id)
+          )
+        );
 
       const finalTransactions = findMatchingTransactions(
         transactions,

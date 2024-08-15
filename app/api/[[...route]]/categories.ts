@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { db } from "@/db/drizzle";
 import { and, eq, inArray } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
-import { validate as validateUUId } from "uuid";
 import { categoriesTable, insertCategorySchema, usersTable } from "@/db/schema";
 
 const app = new Hono()
