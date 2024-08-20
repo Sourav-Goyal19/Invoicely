@@ -335,7 +335,7 @@ const generatePDFforPurchase = (
     const text = "Tax Invoice";
     const textWidth = doc.getTextWidth(text);
     const textX = 105;
-    const textY = 30;
+    const textY = 20;
 
     doc.text(text, textX, textY, { align: "center" });
 
@@ -349,39 +349,39 @@ const generatePDFforPurchase = (
     );
 
     doc.setFontSize(12);
-    doc.text(`GSTIN: ${gst_no}`, 10, 40);
-    doc.text(`Mobile: ${mobileNumber}`, 160, 40);
+    doc.text(`GSTIN: ${gst_no}`, 10, 30);
+    doc.text(`Mobile: ${mobileNumber}`, 160, 30);
 
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
-    doc.text(branchName, 105, 50, { align: "center" });
+    doc.text(branchName, 105, 40, { align: "center" });
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(address, 105, 60, { align: "center" });
+    doc.text(address, 105, 50, { align: "center" });
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
-    doc.line(10, 65, 200, 65);
+    doc.line(10, 55, 200, 55);
 
     doc.setFontSize(12);
     doc.text(
       `M/s: ...................${paymentType}.....................................................................`,
       10,
-      75
+      65
     );
     doc.text(
       `GSTIN No.: ......................................................................................`,
       10,
-      85
+      75
     );
 
-    doc.text(`Invoice No.: ${invoiceNumber}`, 150, 75);
-    doc.text(`Date .......${date ? date : ".............."}........`, 150, 85);
+    doc.text(`Invoice No.: ${invoiceNumber}`, 150, 65);
+    doc.text(`Date .......${date ? date : ".............."}........`, 150, 75);
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
-    doc.line(10, 93, 200, 93);
+    doc.line(10, 83, 200, 83);
 
     const pageTotal = transactions.reduce((acc, curr) => acc + curr.total, 0);
 
@@ -426,7 +426,7 @@ const generatePDFforPurchase = (
     );
 
     autoTable(doc, {
-      startY: 100,
+      startY: 90,
       head: [["Item", "Description of Goods", "Rate", "Quantity", "Amount"]],
       body: pageTransactions,
       theme: "plain",
@@ -512,7 +512,7 @@ const generatePDFforCustomer = (
     const text = "Tax Invoice";
     const textWidth = doc.getTextWidth(text);
     const textX = 105;
-    const textY = 30;
+    const textY = 20;
 
     doc.text(text, textX, textY, { align: "center" });
 
@@ -526,39 +526,39 @@ const generatePDFforCustomer = (
     );
 
     doc.setFontSize(12);
-    doc.text(`GSTIN: ${gst_no}`, 10, 40);
-    doc.text(`Mobile: ${mobileNumber}`, 160, 40);
+    doc.text(`GSTIN: ${gst_no}`, 10, 30);
+    doc.text(`Mobile: ${mobileNumber}`, 160, 30);
 
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
-    doc.text(branchName, 105, 50, { align: "center" });
+    doc.text(branchName, 105, 40, { align: "center" });
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(address, 105, 60, { align: "center" });
+    doc.text(address, 105, 50, { align: "center" });
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
-    doc.line(10, 65, 200, 65);
+    doc.line(10, 55, 200, 55);
 
     doc.setFontSize(12);
     doc.text(
       `M/s: ...................${paymentType}.....................................................................`,
       10,
-      75
+      65
     );
     doc.text(
-      `GSTIN No.: .............${customerName}..............................................................`,
+      `GSTIN No.: ......................................................................................`,
       10,
-      85
+      75
     );
 
-    doc.text(`Invoice No.:`, 150, 75);
-    doc.text(`Date .......${date ? date : ".............."}........`, 150, 85);
+    doc.text(`Invoice No.: `, 150, 65);
+    doc.text(`Date .......${date ? date : ".............."}........`, 150, 75);
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
-    doc.line(10, 93, 200, 93);
+    doc.line(10, 83, 200, 83);
 
     const pageTotal = transactions.reduce((acc, curr) => acc + curr.total, 0);
 
@@ -603,7 +603,7 @@ const generatePDFforCustomer = (
     );
 
     autoTable(doc, {
-      startY: 100,
+      startY: 90,
       head: [["Item", "Description of Goods", "Rate", "Quantity", "Amount"]],
       body: pageTransactions,
       theme: "plain",

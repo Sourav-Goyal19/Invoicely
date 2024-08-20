@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono";
 
 export const useGetBranches = (email: string) => {
-  const query = useQuery({
+  return useQuery({
     queryKey: ["branches"],
     queryFn: async () => {
       const res = await client.api[":email"].branches.$get({
@@ -20,5 +20,4 @@ export const useGetBranches = (email: string) => {
       return data;
     },
   });
-  return query;
 };

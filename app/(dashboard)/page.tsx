@@ -22,10 +22,11 @@ const HomePage = () => {
 
   const branchQuery = useGetBranches(data?.user?.email!);
 
-  const branchOptions = branchQuery.data?.map((branch) => ({
-    label: branch.name,
-    value: branch.id,
-  })) || [{ label: "", value: "" }];
+  const branchOptions =
+    branchQuery.data?.map((branch) => ({
+      label: branch.name,
+      value: branch.id,
+    })) || [];
 
   const [branchId, setBranchId] = useState(
     branchOptions.length > 0 ? branchOptions[0].value : ""
