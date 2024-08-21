@@ -13,7 +13,7 @@ import { z } from "zod";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { db } from "@/db/drizzle";
-import { and, eq, inArray, lte } from "drizzle-orm";
+import { and, eq, gt, inArray, lte } from "drizzle-orm";
 import { format } from "date-fns";
 
 const transactionSchema = insertPurchaseTransactionsSchema.omit({
@@ -169,7 +169,8 @@ const app = new Hono()
         .where(
           and(
             inArray(purchaseTransactionsTable.categoryId, categoryIds),
-            eq(purchaseTransactionsTable.userId, user.id)
+            eq(purchaseTransactionsTable.userId, user.id),
+            gt(purchaseTransactionsTable.quantity, 0)
           )
         );
 
@@ -352,7 +353,7 @@ const generatePDFforPurchase = (
     doc.text(`GSTIN: ${gst_no}`, 10, 30);
     doc.text(`Mobile: ${mobileNumber}`, 160, 30);
 
-    doc.setFontSize(20);
+    doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
     doc.text(branchName, 105, 40, { align: "center" });
 
@@ -364,12 +365,9 @@ const generatePDFforPurchase = (
     doc.setLineWidth(0.3);
     doc.line(10, 55, 200, 55);
 
+    doc.setFontSize(16);
+    doc.text(`M/s: ${paymentType}`, 10, 65);
     doc.setFontSize(12);
-    doc.text(
-      `M/s: ...................${paymentType}.....................................................................`,
-      10,
-      65
-    );
     doc.text(
       `GSTIN No.: ......................................................................................`,
       10,
@@ -377,7 +375,7 @@ const generatePDFforPurchase = (
     );
 
     doc.text(`Invoice No.: ${invoiceNumber}`, 150, 65);
-    doc.text(`Date .......${date ? date : ".............."}........`, 150, 75);
+    doc.text(`Date :${date ? date : ""}`, 150, 75);
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
@@ -470,7 +468,7 @@ const generatePDFforPurchase = (
 
     doc.setFontSize(12);
     doc.text(
-      `Shri ${branchName}`,
+      `${branchName}`,
       doc.internal.pageSize.width - 15,
       doc.internal.pageSize.height - 50,
       { align: "right" }
@@ -541,12 +539,8 @@ const generatePDFforCustomer = (
     doc.setLineWidth(0.3);
     doc.line(10, 55, 200, 55);
 
-    doc.setFontSize(12);
-    doc.text(
-      `M/s: ...................${paymentType}.....................................................................`,
-      10,
-      65
-    );
+    doc.setFontSize(15);
+    doc.text(`M/s: ${paymentType}`, 10, 65);
     doc.text(
       `GSTIN No.: ......................................................................................`,
       10,
@@ -554,7 +548,7 @@ const generatePDFforCustomer = (
     );
 
     doc.text(`Invoice No.: `, 150, 65);
-    doc.text(`Date .......${date ? date : ".............."}........`, 150, 75);
+    doc.text(`Date: ${date ? date : ""}`, 150, 75);
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);
