@@ -36,11 +36,11 @@ const HomePage = () => {
 
   useEffect(() => {
     invoiceQuery.refetch();
-  }, [branchId]);
+  }, [branchId, invoiceQuery]);
 
   useEffect(() => {
     setBranchId(branchOptions[0]?.value || "");
-  }, [branchQuery.data]);
+  }, [branchQuery.data, branchOptions]);
 
   if (invoiceQuery.isLoading || branchQuery.isLoading) {
     return (

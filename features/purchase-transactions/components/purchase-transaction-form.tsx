@@ -40,7 +40,7 @@ interface PurchaseTransactionFormProps {
   onSubmit: (values: ApiFormValues) => void;
   onDelete?: () => void;
   disabled?: boolean;
-  onCreateBranch: (name: string) => void;
+  onCreateBranch?: (name: string) => void;
   branchOptions: { label: string; value: string }[];
   onCreateCategory: (name: string) => void;
   categoryOptions: { label: string; value: string }[];
