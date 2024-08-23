@@ -380,9 +380,9 @@ const generatePDF = async (
     doc.text(`GSTIN: ${gst_no}`, 10, 30);
     doc.text(`Mobile: ${mobileNumber}`, 160, 30);
 
-    doc.setFontSize(20);
+    doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.text(branchName, 105, 40, { align: "center" });
+    doc.text(branchName, 105, 43, { align: "center" });
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
