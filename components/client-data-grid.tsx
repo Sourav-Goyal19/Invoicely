@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import DataGrid from "./data-grid";
+// import DataGrid from "./data-grid";
 import { UserData } from "@/types";
 import { DataCardLoading } from "./data-card";
 
@@ -12,7 +12,7 @@ interface ClientDataGridProps {
 const ClientDataGrid: React.FC<ClientDataGridProps> = ({ user }) => {
   return (
     <Suspense fallback={<DataGridLoading />}>
-      <DataGrid user={user} />
+      {/* <DataGrid user={user} /> */}
     </Suspense>
   );
 };
