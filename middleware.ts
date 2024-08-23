@@ -26,6 +26,7 @@ export const config = {
     "/(dashboard)/:path*",
     "/branches",
     "/categories",
-    "/transactions",
+    "/purchase-transactions",
+    "/sales-transactions",
   ],
 };

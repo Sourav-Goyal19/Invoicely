@@ -8,6 +8,13 @@
       "when": 1723636217655,
       "tag": "0000_famous_diamondback",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1724234370564,
+      "tag": "0001_elite_richard_fisk",
+      "breakpoints": true
     }
   ]
 }

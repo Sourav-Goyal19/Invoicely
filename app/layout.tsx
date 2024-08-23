@@ -6,12 +6,13 @@ import { Toaster } from "react-hot-toast";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import SheetProvider from "@/providers/sheet-provider";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Finance Manager",
-  description: "Finance Manager for your business",
+  title: "GST Manager",
+  description: "GST Manager for your business",
 };
 
 export default function RootLayout({
@@ -24,8 +25,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <NextAuthProvider>
           <QueryProvider>
-            <SheetProvider />
-            {children}
+            <EdgeStoreProvider>
+              <SheetProvider />
+              {children}
+            </EdgeStoreProvider>
           </QueryProvider>
           <Toaster />
           <Sonner />

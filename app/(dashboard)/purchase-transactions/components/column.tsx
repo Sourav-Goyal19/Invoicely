@@ -82,7 +82,21 @@ export const columns: ColumnDef<ResponseType>[] = [
   },
   {
     accessorKey: "quantity",
-    header: "Quantity",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Quantity
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const quantity = row.getValue("quantity") as number;
+      return <p className="pl-9">{quantity}</p>;
+    },
   },
   {
     accessorKey: "product",
@@ -97,6 +111,10 @@ export const columns: ColumnDef<ResponseType>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const product = row.getValue("product") as string;
+      return <p className="pl-5">{product}</p>;
+    },
   },
   {
     accessorKey: "price",
@@ -106,10 +124,14 @@ export const columns: ColumnDef<ResponseType>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Amount
+          Price
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      const price = row.getValue("price") as number;
+      return <p className="pl-4">{formatCurrency(price)}</p>;
     },
   },
   {

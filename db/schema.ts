@@ -40,6 +40,7 @@ export const branchesTable = pgTable("branches", {
   address: text("address").notNull(),
   phone: text("phone").notNull(),
   gstNo: text("gst_no"),
+  signatureImageUrl: text("signature_image_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -1,3 +1,4 @@
+import ImageUpload from "@/components/image-upload";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,6 +20,7 @@ const formFields = insertBranchSchema.pick({
   address: true,
   phone: true,
   gstNo: true,
+  signatureImageUrl: true,
 });
 
 type FormValues = z.input<typeof formFields>;
@@ -44,6 +46,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({
       address: "",
       phone: "",
       gstNo: "",
+      signatureImageUrl: "",
     },
     resolver: zodResolver(formFields),
   });
@@ -129,6 +132,24 @@ export const BranchForm: React.FC<BranchFormProps> = ({
                     disabled={disabled}
                     {...field}
                     value={field.value || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="signatureImageUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Signature Image</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    disabled={disabled}
+                    onChange={(url) => field.onChange(url)}
+                    onRemove={() => field.onChange(null)}
+                    value={field.value}
                   />
                 </FormControl>
                 <FormMessage />

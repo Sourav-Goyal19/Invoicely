@@ -38,6 +38,7 @@ const app = new Hono()
           address: branchesTable.address,
           phone: branchesTable.phone,
           gstNo: branchesTable.gstNo,
+          signatureImageUrl: branchesTable.signatureImageUrl,
         })
         .from(branchesTable)
         .where(eq(branchesTable.userId, user.id));
@@ -88,6 +89,7 @@ const app = new Hono()
           address: branchesTable.address,
           phone: branchesTable.phone,
           gstNo: branchesTable.gstNo,
+          signatureImageUrl: branchesTable.signatureImageUrl,
         })
         .from(branchesTable)
         .where(
@@ -116,10 +118,12 @@ const app = new Hono()
         address: true,
         phone: true,
         gstNo: true,
+        signatureImageUrl: true,
       })
     ),
     async (c) => {
-      const { name, address, phone, gstNo } = c.req.valid("json");
+      const { name, address, phone, gstNo, signatureImageUrl } =
+        c.req.valid("json");
       const email = c.req.valid("param").email;
 
       const [user] = await db
@@ -151,6 +155,7 @@ const app = new Hono()
           address,
           phone,
           gstNo,
+          signatureImageUrl,
         })
         .returning();
 
@@ -217,6 +222,7 @@ const app = new Hono()
         address: true,
         phone: true,
         gstNo: true,
+        signatureImageUrl: true,
       })
     ),
     async (c) => {
@@ -226,6 +232,7 @@ const app = new Hono()
       const address = c.req.valid("json").address;
       const phone = c.req.valid("json").phone;
       const gstNo = c.req.valid("json").gstNo;
+      const signatureImageUrl = c.req.valid("json").signatureImageUrl;
 
       if (!id) {
         return c.json({ error: "branch id is required" }, 400);
@@ -263,6 +270,7 @@ const app = new Hono()
           address,
           phone,
           gstNo,
+          signatureImageUrl,
         })
         .where(and(eq(branchesTable.userId, user.id), eq(branchesTable.id, id)))
         .returning();

@@ -46,7 +46,7 @@ const ConfirmationDialog = ({
   const [branchId, setBranchId] = useState<string | undefined>(
     branchOptions[0]?.value
   );
-  const [GST, setGST] = useState<number | undefined>(undefined);
+  const [GST, setGST] = useState<number | undefined>(5);
   const [totalAmount, setTotalAmount] = useState<number | undefined>(undefined);
   const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
@@ -106,6 +106,7 @@ const ConfirmationDialog = ({
         />
         <Input
           placeholder="Enter GST Amount"
+          defaultValue={5}
           type="number"
           onChange={(e) => setGST(Number(e.target.value))}
         />

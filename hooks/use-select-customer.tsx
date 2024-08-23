@@ -45,7 +45,7 @@ const ConfirmationDialog = ({
   const [branchId, setBranchId] = useState<string | undefined>(
     branchOptions[0]?.value
   );
-  const [GST, setGST] = useState<number | undefined>(undefined);
+  const [GST, setGST] = useState<number | undefined>(5);
   const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
@@ -88,6 +88,7 @@ const ConfirmationDialog = ({
         <Input
           placeholder="Enter GST Amount"
           type="number"
+          defaultValue={5}
           onChange={(e) => setGST(Number(e.target.value))}
         />
         <ShadcnSelect onValueChange={setPaymentType}>

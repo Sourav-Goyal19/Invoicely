@@ -21,6 +21,7 @@ const formFields = insertBranchSchema.pick({
   address: true,
   phone: true,
   gstNo: true,
+  signatureImageUrl: true,
 });
 
 type FormValues = z.input<typeof formFields>;
@@ -66,6 +67,7 @@ const EditBranchSheet = () => {
     address: branchQuery.data?.address,
     phone: branchQuery.data?.phone,
     gstNo: branchQuery.data?.gstNo,
+    signatureImageUrl: branchQuery.data?.signatureImageUrl,
   };
 
   return (
