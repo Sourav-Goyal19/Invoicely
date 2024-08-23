@@ -33,10 +33,10 @@ const NewPurchaseTransactionSheet = () => {
 
   const branchQuery = useGetBranches(data?.user?.email!);
   const branchMutation = useCreateBranch(data?.user?.email!);
-  const onCreateBranch = (name: string) =>
-    branchMutation.mutate({
-      name,
-    });
+  // const onCreateBranch = (name: string) =>
+  //   branchMutation.mutate({
+  //     name,
+  //   });
   const branchOptions = (branchQuery.data || []).map((branch) => ({
     label: branch.name,
     value: branch.id,
@@ -86,7 +86,7 @@ const NewPurchaseTransactionSheet = () => {
             onSubmit={onSubmit}
             disabled={isPending}
             branchOptions={branchOptions}
-            onCreateBranch={onCreateBranch}
+            // onCreateBranch={onCreateBranch}
             categoryOptions={categoryOptions}
             onCreateCategory={onCreateCategory}
           />
