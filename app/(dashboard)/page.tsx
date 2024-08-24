@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
 import { useGetInvoices } from "@/features/invoice/api/use-get-invoices";
@@ -23,11 +23,14 @@ const HomePage = () => {
 
   const branchQuery = useGetBranches(data?.user?.email!);
 
-  const branchOptions =
-    branchQuery.data?.map((branch) => ({
-      label: branch.name,
-      value: branch.id,
-    })) || [];
+  const branchOptions = useMemo(
+    () =>
+      branchQuery.data?.map((branch) => ({
+        label: branch.name,
+        value: branch.id,
+      })) || [],
+    [branchQuery.data]
+  );
 
   const [branchId, setBranchId] = useState(
     branchOptions.length > 0 ? branchOptions[0].value : ""
