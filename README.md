@@ -62,7 +62,7 @@ To set up and run Finflow locally, follow these steps:
 
 ## Deployment
 
-For deployment instructions, you can follow the typical Next.js deployment process. The application is live at [https://gst-manager-mu.vercel.app/](https://gst-manager-mu.vercel.app/).
+For deployment instructions, you can follow the typical Next.js deployment process. The application is live at [here](https://invoicely-manager.vercel.app).
 
 ## Contributing
 
