@@ -6,9 +6,9 @@ import { Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {
-  title: "Transactions | FinFlow",
+  title: "Sales Transactions | Invoicely",
   description:
-    "Easily manage your financial transactions with FinFlow. Create, edit, and view transactions with custom branches and categories. Sort, search, and paginate through your financial history effortlessly.",
+    "Manage and generate PDF reports for your sales transactions with Invoicely. Create, edit, and view transactions, customize with branches and categories, and easily sort, search, and paginate through your financial history.",
 };
 
 const SalesTransactionsPage = () => {

@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import CategoriesPageClient from "./components/category-client";
 
 export const metadata: Metadata = {
-  title: "Categories | FinFlow",
+  title: "Categories | Invoicely",
   description:
-    "Manage your financial categories with FinFlow. Create, edit, and organize expense and income categories. Use search and bulk operations for efficient financial tracking.",
+    "Efficiently manage and organize your categories with Invoicely. Easily create, edit, and categorize your transactions, and use search and bulk operations for better oversight.",
 };
 
 const CategoriesPage = () => {

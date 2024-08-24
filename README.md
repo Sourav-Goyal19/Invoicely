@@ -1,27 +1,22 @@
-# Finflow - Finance Manager
+# GST Manager
 
-Finflow is a comprehensive finance management application designed to help users track and manage their financial transactions with ease. The application supports multiple account types like cash, bank, and card, allowing users to categorize their transactions and visualize them through various interactive charts. Finflow offers a range of features to enhance user experience, including customizable filters, detailed transaction tables, and multiple chart types. Users can also import transactions via CSV, manage their settings, and authenticate securely.
+GST Manager is a web application designed for shop retailers to generate GST-compliant invoices and manage their transactions efficiently. It automates the process of calculating totals, GST, and formatting invoices, simplifying the billing process for businesses.
 
 ## Features
 
-- 📊 **Interactive Financial Dashboard:** Visualize your financial data with dynamic charts.
-- 🔁 **Changeable Chart Types:** Switch between area, line, bar, pie, radar, and radial charts for better insights.
-- 🗓 **Account and Date Filters:** Filter transactions by specific accounts and date ranges.
-- 💹 **Detailed Transactions Table:** View all your transactions in a comprehensive table with sorting and filtering options.
-- ➕ **Add Transactions Form:** Easily add new transactions using a user-friendly form.
-- 🧩 **Customizable Select Components:** Personalize your data selection for a tailored experience.
-- 💵 **Income and Expense Toggle:** Quickly switch between viewing income and expenses.
-- 🔄 **CSV Transaction Imports:** Import your transactions seamlessly from CSV files.
-- ⏳ **Add Skeleton UI for Loading:** Improve user experience with a skeleton screen while data is loading.
-- 🔥 **API via Hono.js:** Efficient backend API handling for smooth operations.
-- 🪝 **State Management via Tanstack React Query:** Manage your application's state effectively.
-- 🔐 **Authentication via Next Auth:** Secure user authentication for server-side rendering.
-- 🗑 **Bulk Delete and Search in Transactions:** Efficiently manage your transactions with bulk delete and search functionalities.
-- 👤 **User Settings Customization:** Customize your user settings for a personalized experience.
-- 🌐 **Built with Next.js 14:** Leveraging the latest features of Next.js for robust performance.
-- 🎨 **Styled with TailwindCSS and Shadcn UI:** Modern and responsive design using TailwindCSS and Shadcn UI.
-- 💾 **PostgreSQL & Drizzle ORM:** Reliable data storage and management.
-- 🚀 **Deployed on Vercel:** Fast and scalable deployment on Vercel.
+- **Invoice Generation:** Create detailed invoices with transaction details, including quantity, name, price, and totals before and after GST.
+- **Transaction Management:** View and manage all created invoices with dates and totals.
+- **Category Management:** Create and categorize products for better organization.
+- **Branch Management:** Handle multiple business branches with separate invoicing.
+- **Transaction Filtering:** Filter transactions by date range.
+- **Special Transaction Finder:** Find transactions that sum up to a specific total, useful for generating accurate bills or invoices for accountants and ITR.
+
+## Tech Stack
+
+- **Frontend:** Next.js, TypeScript
+- **Backend:** Drizzle ORM, Hono.js
+- **Database:** PostgreSQL
+- **PDF Generation:** jsPDF
 
 ## Installation
 
@@ -43,8 +38,16 @@ To set up and run Finflow locally, follow these steps:
 3. Provide your own database connection string and `NEXTAUTH_SECRET` in the `.env` file.
 
    ```env
-   DATABASE_URL=your-database-connection-string
-   NEXTAUTH_SECRET=your-nextauth-secret
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   DATABASE_URL=""
+   NEXT_PUBLIC_DATABASE_URL=""
+   AUTH_DRIZZLE_URL=""
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=
+   JWT_SECRET=
+   JWT_SIGNING_KEY=
+   JWT_ENCRYPTION_KEY=
+   JWT_MAX_AGE=
    ```
 
 4. Start the development server:
@@ -52,42 +55,15 @@ To set up and run Finflow locally, follow these steps:
    npm run dev
    ```
 
-## Technologies Used
-
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- PostgreSQL
-- Neon for database
-- Drizzle ORM
-- Next Auth
-- Hono.js for API
-- Shadcn UI
-
-## Configuration
-
-Ensure you have the following environment variables set up in your `.env` file:
-
-```env
-DATABASE_URL=your-database-connection-string
-NEXTAUTH_SECRET=your-nextauth-secret
-```
-
 ## Usage
 
-You can interact with the application via this link: [Finflow Manager](https://finflow-manager.vercel.app)
+- Access the application through the provided URL and start generating GST-compliant invoices.
+- Use the interface to create invoices, manage transactions, categorize products, and filter by date.
+
+## Deployment
+
+For deployment instructions, you can follow the typical Next.js deployment process. The application is live at [https://gst-manager-mu.vercel.app/](https://gst-manager-mu.vercel.app/).
 
 ## Contributing
 
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/your-feature-name`).
-3. Make your changes.
-4. Commit your changes (`git commit -m 'Add some feature'`).
-5. Push to the branch (`git push origin feature/your-feature-name`).
-6. Open a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Contributions are welcome! Please follow the standard fork-and-pull request workflow. Ensure your code adheres to the project's coding standards and passes all tests.
