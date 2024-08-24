@@ -1,6 +1,6 @@
-# GST Manager
+# Invoicely
 
-GST Manager is a web application designed for shop retailers to generate GST-compliant invoices and manage their transactions efficiently. It automates the process of calculating totals, GST, and formatting invoices, simplifying the billing process for businesses.
+Invoicely is a web application designed for shop retailers to generate GST-compliant invoices and manage their transactions efficiently. It automates the process of calculating totals, GST, and formatting invoices, simplifying the billing process for businesses.
 
 ## Features
 
