@@ -97,8 +97,7 @@ const TransactionsPageClient = () => {
           const url = URL.createObjectURL(data);
           const link = document.createElement("a");
           link.href = url;
-          link.target = "_blank";
-          // link.download = "invoice.pdf";
+          link.download = "purchase-invoice.pdf";
           link.click();
         },
         onError: (error) => {

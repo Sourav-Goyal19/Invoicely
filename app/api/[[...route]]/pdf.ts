@@ -82,6 +82,7 @@ const app = new Hono()
       const branchName = branch.name;
       const GST = values.GST;
       const formattedDate = format(values.date, "dd/MM/yyyy");
+      const formattedDateForFilename = format(values.date, "yyyyMMdd");
 
       const pdfBuffer = await generatePDF(
         branchName,
@@ -101,7 +102,9 @@ const app = new Hono()
       const pdfUint8Array = new Uint8Array(pdfArrayBuffer);
 
       c.header("Content-Type", "application/pdf");
-      c.header("Content-Disposition", "attachment; filename=invoice.pdf");
+
+      const filename = `invoice-${""}-${formattedDateForFilename || ""}.pdf`;
+      c.header("Content-Disposition", `attachment; filename=${filename}`);
 
       return c.body(pdfUint8Array);
     }
@@ -141,6 +144,10 @@ const app = new Hono()
         })
         .from(usersTable)
         .where(eq(usersTable.email, email));
+
+      if (!user) {
+        return c.json({ error: "User not found" }, 404);
+      }
 
       const [branch] = await db
         .select()
@@ -185,7 +192,7 @@ const app = new Hono()
         return c.json({ error: "No matching transactions found" }, 404);
       }
 
-      finalTransactions.forEach(async (transactiontoUpdate) => {
+      for (const transactiontoUpdate of finalTransactions) {
         const [existingTransaction] = await db
           .select()
           .from(purchaseTransactionsTable)
@@ -201,7 +208,7 @@ const app = new Hono()
             total: String(transactiontoUpdate.price * newQuantity),
           })
           .where(eq(purchaseTransactionsTable.id, transactiontoUpdate.id));
-      });
+      }
 
       const [invoice] = await db
         .select()
@@ -229,6 +236,7 @@ const app = new Hono()
       });
 
       const formattedDate = format(date, "dd/MM/yyyy");
+      const formattedDateForFilename = format(date, "yyyyMMdd");
       const branchName = branch.name;
       const GST = values.GST;
 
@@ -257,7 +265,10 @@ const app = new Hono()
       const pdfUint8Array = new Uint8Array(pdfArrayBuffer);
 
       c.header("Content-Type", "application/pdf");
-      c.header("Content-Disposition", "attachment; filename=invoice.pdf");
+      const filename = `invoice-${newInvoiceItem.invoiceNumber || ""}-${
+        formattedDateForFilename || ""
+      }.pdf`;
+      c.header("Content-Disposition", `attachment; filename=${filename}`);
 
       return c.body(pdfUint8Array);
     }
