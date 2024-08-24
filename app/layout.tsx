@@ -12,7 +12,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Invoicely",
-  description: "GST Manager for your business",
+  description:
+    "Invoicely simplifies your GST billing and transaction management. Easily create and manage GST-compliant invoices, categorize products, and track financial transactions across multiple branches. Generate detailed PDF reports, find transactions that match specific totals, and streamline your business operations with our intuitive tools.",
 };
 
 export default function RootLayout({

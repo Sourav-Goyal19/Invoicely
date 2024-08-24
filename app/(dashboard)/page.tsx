@@ -18,12 +18,6 @@ import {
 } from "@/components/ui/select";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Welcome to Invoicely",
-  description:
-    "Invoicely simplifies your GST billing and transaction management. Easily create and manage GST-compliant invoices, categorize products, and track financial transactions across multiple branches. Generate detailed PDF reports, find transactions that match specific totals, and streamline your business operations with our intuitive tools.",
-};
-
 const HomePage = () => {
   const { data } = useSession();
 
