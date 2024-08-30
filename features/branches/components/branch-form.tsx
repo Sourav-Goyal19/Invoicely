@@ -75,7 +75,7 @@ export const BranchForm: React.FC<BranchFormProps> = ({
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="e.g. Cash, Bank, Credit Card"
+                    placeholder="Company Name"
                     disabled={disabled}
                     {...field}
                   />
