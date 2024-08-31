@@ -231,9 +231,12 @@ const app = new Hono()
         return c.json({ error: "Error creating invoice" }, 500);
       }
 
-      await db.update(invoiceTable).set({
-        lastInvoiceNumber: invoice.lastInvoiceNumber + 1,
-      });
+      await db
+        .update(invoiceTable)
+        .set({
+          lastInvoiceNumber: invoice.lastInvoiceNumber + 1,
+        })
+        .where(eq(invoiceTable.id, invoice.id));
 
       const formattedDate = format(date, "dd/MM/yyyy");
       const formattedDateForFilename = format(date, "yyyyMMdd");
