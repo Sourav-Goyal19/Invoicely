@@ -28,10 +28,6 @@ const routes = [
     href: "/branches",
     label: "Branches",
   },
-  {
-    href: "/settings",
-    label: "Settings",
-  },
 ];
 
 const Navigation = () => {
