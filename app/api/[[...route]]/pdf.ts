@@ -373,10 +373,17 @@ const generatePDF = async (
       doc.addPage();
     }
 
+    const margin = 10;
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+
+    doc.setLineWidth(0.5);
+    doc.rect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin);
+
     doc.setFontSize(16);
     const text = "Tax Invoice";
     const textWidth = doc.getTextWidth(text);
-    const textX = 105;
+    const textX = 106;
     const textY = 20;
 
     doc.text(text, textX, textY, { align: "center" });
@@ -391,7 +398,7 @@ const generatePDF = async (
     );
 
     doc.setFontSize(12);
-    doc.text(`GSTIN: ${gst_no}`, 10, 30);
+    doc.text(`GSTIN: ${gst_no}`, 12, 30);
     doc.text(`Mobile: ${mobileNumber}`, 160, 30);
 
     doc.setFontSize(22);
@@ -407,19 +414,20 @@ const generatePDF = async (
     doc.line(10, 55, 200, 55);
 
     doc.setFontSize(15);
-    doc.text(`M/s: ${paymentType}`, 10, 65);
+    doc.text(`M/s: ${paymentType}`, 14, 65);
 
     doc.setFontSize(12);
     doc.text(
       `GSTIN No.: ................${
         customerName ? customerName : ""
       }................................................`,
-      10,
+      14,
       75
     );
-    doc.text(`Invoice No.: ${invoiceNumber ? invoiceNumber : ""}`, 150, 65);
 
-    doc.text(`Date :${date ? date : ""}`, 150, 75);
+    doc.text(`Invoice No.: ${invoiceNumber ? invoiceNumber : ""}`, 160, 65);
+
+    doc.text(`Date :${date ? date : ""}`, 160, 75);
 
     doc.setDrawColor(31, 31, 20);
     doc.setLineWidth(0.3);

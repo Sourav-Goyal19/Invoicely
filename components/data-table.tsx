@@ -97,7 +97,8 @@ export function DataTable<TData, TValue>({
           const url = URL.createObjectURL(data);
           const link = document.createElement("a");
           link.href = url;
-          link.download = "invoice.pdf";
+          link.target = "_blank";
+          // link.download = "invoice.pdf";
           table.resetRowSelection();
           link.click();
         },
