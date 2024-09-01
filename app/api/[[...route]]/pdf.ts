@@ -344,25 +344,17 @@ const generatePDF = async (
 ): Promise<Blob> => {
   const doc = new jsPDF();
 
-  const addSignatureImage = (signatureImageUrl: string): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = "Anonymous";
+  const addSignatureImage = (signatureUrl: string) => {
+    const imageElement = document.createElement("img");
+    imageElement.src = signatureUrl;
+    imageElement.alt = "Signature";
 
-      img.onload = function () {
-        const imgWidth = 50;
-        const imgHeight = 20;
-        const x = doc.internal.pageSize.width - 15;
-        const y = doc.internal.pageSize.height - imgHeight - 10;
+    const imgWidth = 50;
+    const imgHeight = 20;
+    const x = doc.internal.pageSize.width - imgWidth - 15;
+    const y = doc.internal.pageSize.height - imgHeight - 10;
 
-        doc.addImage(img, "JPEG", x, y, imgWidth, imgHeight);
-        resolve();
-      };
-
-      img.onerror = () => reject(new Error("Failed to load image"));
-
-      img.src = signatureImageUrl;
-    });
+    return doc.addImage(imageElement, "JPEG", x, y, imgWidth, imgHeight);
   };
 
   const addPageWithTransactions = async (
@@ -382,10 +374,10 @@ const generatePDF = async (
 
     doc.setFontSize(16);
     const text = "Tax Invoice";
-    const textWidth = doc.getTextWidth(text);
     const textX = 106;
     const textY = 20;
 
+    const textWidth = doc.getTextWidth(text);
     doc.text(text, textX, textY, { align: "center" });
 
     const underlineY = textY + 0.7;
@@ -433,12 +425,9 @@ const generatePDF = async (
     doc.setLineWidth(0.3);
     doc.line(10, 83, 200, 83);
 
-    const pageTotal = transactions.reduce((acc, curr) => acc + curr.total, 0);
-
-    const amountBeforeTax = calculateAmountBeforeGST(pageTotal, GSTPercent);
-
-    const discountFactor = amountBeforeTax / pageTotal;
-
+    const totalAmount = transactions.reduce((acc, curr) => acc + curr.total, 0);
+    const amountBeforeTax = calculateAmountBeforeGST(totalAmount, GSTPercent);
+    const discountFactor = amountBeforeTax / totalAmount;
     const SGST = amountBeforeTax * (GSTPercent / 2 / 100);
     const CGST = amountBeforeTax * (GSTPercent / 2 / 100);
 
@@ -472,7 +461,7 @@ const generatePDF = async (
       ],
       ["", "", "@SGST", `${GSTPercent / 2}%`, `Rs ${SGST.toFixed(2)}`],
       ["", "", "@CGST", `${GSTPercent / 2}%`, `Rs ${CGST.toFixed(2)}`],
-      ["", "Total Sale Price with GST", "", "", `Rs ${pageTotal.toFixed(2)}`]
+      ["", "Total Sale Price with GST", "", "", `Rs ${totalAmount.toFixed(2)}`]
     );
 
     autoTable(doc, {
@@ -520,29 +509,28 @@ const generatePDF = async (
 
     if (signatureImageUrl) {
       try {
-        await addSignatureImage(signatureImageUrl);
+        addSignatureImage(signatureImageUrl);
       } catch (error) {
         console.error("Failed to add signature image:", error);
       }
     }
 
     doc.setFontSize(12);
+    const branchNameTextWidth = doc.getTextWidth(branchName);
     doc.text(
-      `${branchName}`,
-      doc.internal.pageSize.width - 15,
-      doc.internal.pageSize.height - 20,
-      { align: "right" }
+      branchName,
+      doc.internal.pageSize.width - branchNameTextWidth - 15,
+      doc.internal.pageSize.height - 20
     );
   };
 
   const chunkSize = 10;
   for (let i = 0; i < transactions.length; i += chunkSize) {
     const chunk = transactions.slice(i, i + chunkSize);
-    await addPageWithTransactions(chunk, Math.floor(i / chunkSize) + 1);
+    await addPageWithTransactions(chunk, i / chunkSize + 1);
   }
 
-  const pdfBlob = doc.output("blob");
-  return pdfBlob;
+  return doc.output("blob");
 };
 
 export default app;
