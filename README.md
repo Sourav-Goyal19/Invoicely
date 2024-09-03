@@ -25,7 +25,7 @@ To set up and run Finflow locally, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/finflow.git
+   git clone https://github.com/Sourav-Goyal19/invoicely.git
    cd invoicely
    ```
 
