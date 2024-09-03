@@ -20,7 +20,7 @@ Invoicely is a web application designed for shop retailers to generate GST-compl
 
 ## Installation
 
-To set up and run Finflow locally, follow these steps:
+To set up and run Invoicely locally, follow these steps:
 
 1. Clone the repository:
 
