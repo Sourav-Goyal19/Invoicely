@@ -4,12 +4,12 @@ Invoicely is a web application designed for shop retailers to generate GST-compl
 
 ## Features
 
-- **Invoice Generation:** Create detailed invoices with transaction details, including quantity, name, price, and totals before and after GST.
-- **Transaction Management:** View and manage all created invoices with dates and totals.
-- **Category Management:** Create and categorize products for better organization.
-- **Branch Management:** Handle multiple business branches with separate invoicing.
-- **Transaction Filtering:** Filter transactions by date range.
-- **Special Transaction Finder:** Find transactions that sum up to a specific total, useful for generating accurate bills or invoices for accountants and ITR.
+- 🧾 **Invoice Generation:** Create detailed invoices with transaction details, including quantity, name, price, and totals before and after GST.
+- 📂 **Transaction Management:** View and manage all created invoices with dates and totals.
+- 🏷️ **Category Management:** Create and categorize products for better organization.
+- 🏢 **Branch Management:** Handle multiple business branches with separate invoicing.
+- 📅 **Transaction Filtering:** Filter transactions by date range.
+- 🔍 **Special Transaction Finder:** Find transactions that sum up to a specific total, useful for generating accurate bills or invoices for accountants and ITR.
 
 ## Tech Stack
 
