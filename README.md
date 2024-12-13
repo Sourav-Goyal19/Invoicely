@@ -4,12 +4,21 @@ Invoicely is a web application designed for shop retailers to generate GST-compl
 
 ## Features
 
-- 🧾 **Invoice Generation:** Create detailed invoices with transaction details, including quantity, name, price, and totals before and after GST.
-- 📂 **Transaction Management:** View and manage all created invoices with dates and totals.
-- 🏷️ **Category Management:** Create and categorize products for better organization.
-- 🏢 **Branch Management:** Handle multiple business branches with separate invoicing.
-- 📅 **Transaction Filtering:** Filter transactions by date range.
-- 🔍 **Special Transaction Finder:** Find transactions that sum up to a specific total, useful for generating accurate bills or invoices for accountants and ITR.
+- 🧾 **GST-Compliant Invoice Generation:** Effortlessly create detailed invoices with product descriptions, quantities, prices, GST calculations, and totals.
+- 📂 **Transaction Management Dashboard:** Manage all invoices with an interactive dashboard featuring sorting, filtering, and date-range selection.
+- 🏷️ **Category and Product Management:** Organize inventory with easy-to-use category and product management tools.
+- 🏢 **Multi-Branch Support:** Manage invoices and transactions for multiple business branches seamlessly.
+- 🔍 **Smart Search for Transactions:** Search invoices by specific parameters like total amount, date, or GST percentage for quick retrieval.
+- 📜 **Digital and Printable Invoices:** Generate PDF invoices for digital sharing or high-quality printing.
+- ⏳ **Loading Skeletons for Transactions:** Enhance user experience with skeleton UI during data loading.
+- 🗑️ **Bulk Transaction Deletion:** Quickly delete multiple transactions for easier data management.
+- 🔐 **Secure Authentication with Next Auth:** Ensure secure access with authentication and role-based permissions.
+- 🌟 **User Settings and Preferences:** Customize application settings, themes, and notification preferences.
+- 💾 **Cloud Backup and Restore:** Never lose data with automated cloud backups and easy restoration.
+- 🔥 **Optimized API via Hono.js:** Experience fast and reliable performance with a streamlined backend.
+- 🎨 **Styled with TailwindCSS and Shadcn UI:** Ensure modern, responsive, and accessible design across devices.
+- 🚀 **Deployed on Vercel:** Benefit from fast, scalable, and reliable deployment.
+
 
 ## Tech Stack
 
