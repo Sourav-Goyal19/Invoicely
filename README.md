@@ -14,7 +14,7 @@
 
 ![Overview](https://res.cloudinary.com/dvovo1lfg/image/upload/v1734108665/projects/invoicely/jdjzdm7kagjzy1hzxkvq.png)
 
-Invoicely is a web application designed for shop retailers to generate GST-compliant invoices and manage their transactions efficiently. It automates the process of calculating totals, GST, and formatting invoices, simplifying the billing process for businesses.
+Invoicely is a comprehensive web application specifically designed to streamline the invoicing process for shop retailers, enabling them to generate GST-compliant invoices and manage their transactions with ease. With its user-friendly interface, Invoicely automates the intricate tasks of calculating totals, applying GST rates, and formatting invoices according to legal standards. This reduces the manual effort involved in the billing process and ensures accuracy and compliance.
 
 ## Features
 
